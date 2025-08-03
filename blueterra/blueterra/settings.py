@@ -25,7 +25,13 @@ SECRET_KEY = 'django-insecure-%+z_u^oamsnmfj_a&^v@k6!-2y+m8h#k^5iv+9jpov1vemz#++
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+
 
 
 # Application definition
@@ -37,11 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+      'corsheaders',
       'journals',
       'storages',
 ]
 
 MIDDLEWARE = [
+     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -76,11 +85,13 @@ WSGI_APPLICATION = 'blueterra.wsgi.application'
 AWS_ACCESS_KEY_ID = '7e7fc05e041d3503dd0c9e57652a48cd'
 AWS_SECRET_ACCESS_KEY = 'e0ac5975ae846ee4a2fe5d114afa97b569490c0b47e302bc679f24b6d098c8ab'
 AWS_STORAGE_BUCKET_NAME = 'mybucket'
-AWS_S3_ENDPOINT_URL = 'https://f30c97b5e92eb15944ca7c0536b63e54.r2.cloudflarestorage.com'
+# AWS_S3_ENDPOINT_URL = 'https://f30c97b5e92eb15944ca7c0536b63e54.r2.cloudflarestorage.com'
 AWS_S3_REGION_NAME = ''
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
 
+AWS_DEFAULT_ACL = 'public-read'
+AWS_QUERYSTRING_AUTH = False  # <-- This disables signed URLs
 
 
 

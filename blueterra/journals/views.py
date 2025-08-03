@@ -9,6 +9,8 @@ from .models import *
 from .serializers import *
 from .paginations import *
 # Create your views here.
+from rest_framework.parsers import MultiPartParser, FormParser
+
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -20,7 +22,7 @@ def hello_api(request):
 
 
 class BlogPostAPIView(APIView):
-    # parser_classes = [MultiPartParser, FormParser] 
+    parser_classes = [MultiPartParser, FormParser] 
      
     def get(self, request):
 
