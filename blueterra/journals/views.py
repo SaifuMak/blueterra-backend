@@ -14,7 +14,43 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-# from rest_framework.parsers import MultiPartParser, FormParser
+
+from django.http import JsonResponse
+from django.conf import settings
+
+import uuid
+import boto3
+
+
+class UploadBlogImageView(APIView):
+
+    def post(self, request):
+        file_obj = request.FILES.get('file')
+        if not file_obj:
+            return JsonResponse({"error": "No file provided"}, status=400)
+
+        # Unique filename to avoid overwrites
+        file_extension = file_obj.name.split('.')[-1]
+        file_name = f"blog_images/{uuid.uuid4()}.{file_extension}"
+
+        # S3 upload
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+             endpoint_url="https://f30c97b5e92eb15944ca7c0536b63e54.r2.cloudflarestorage.com"
+        )
+
+        s3.upload_fileobj(
+            file_obj,
+            settings.AWS_STORAGE_BUCKET_NAME,
+            file_name,
+            ExtraArgs={'ACL': 'public-read'}  # make it public
+        )
+
+        file_url = f"https://pub-c75e3733f0bd4a078b015afdd3afc354.r2.dev/{file_name}"
+        return JsonResponse({"url": file_url})
+
 
 @api_view(['GET'])
 def hello_api(request):
@@ -88,7 +124,6 @@ class BlogPostAPIView(APIView):
     
    
 
-
 class BlogPostDetailAPIView(APIView):
     
     def get(self, request, pk):
@@ -122,7 +157,6 @@ class BlogCategoryAPIView(APIView):
             serializer.save()
             return Response({'message': 'Category created successfully!'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 

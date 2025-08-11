@@ -19,7 +19,7 @@ urlpatterns = [
    path('get-journal-categories/', get_journal_categories, name='get_journal_categories'),
    path('get-journals/', get_journals, name='get_journals'),
    path('get-featured-journals/', get_featured_journals, name='get_featured_journals'),
-
+ path('upload-blog-image/', UploadBlogImageView.as_view(), name='upload-blog-image'),
 
 
     
