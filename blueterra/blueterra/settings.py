@@ -31,9 +31,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 
-
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -78,9 +75,9 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'blueterra.wsgi.application'
-
-
 
 
 AWS_ACCESS_KEY_ID = '7e7fc05e041d3503dd0c9e57652a48cd'
