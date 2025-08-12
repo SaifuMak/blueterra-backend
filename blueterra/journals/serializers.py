@@ -9,6 +9,8 @@ class BlogPostSerializer(serializers.ModelSerializer):
         model = BlogPost
         fields = '__all__'
 
+        
+
 
 
 class BlogCategorySerializer(serializers.ModelSerializer):
@@ -16,6 +18,7 @@ class BlogCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogCategory
         fields = '__all__'
+
 
 
 
@@ -31,7 +34,7 @@ class BlogsUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlogPost
-        fields = ['id','created_at','title','preview_image','category_name', 'image_public_url']
+        fields = ['id', 'slug', 'created_at','title', 'blog_content', 'preview_image','category_name', 'image_public_url']
 
 
 class FeaturedBlogsUserSerializer(serializers.ModelSerializer):

@@ -167,6 +167,15 @@ def get_journal_categories(request):
     return Response(serializer.data, status= status.HTTP_200_OK)
 
 
+
+
+@api_view(['GET'])
+def get_five_journals(request):
+    blogs = BlogPost.objects.order_by('?')[:5]
+    serializer = BlogsUserSerializer(blogs, many=True)
+    return Response(serializer.data, status= status.HTTP_200_OK)
+
+
 @api_view(['GET'])
 def get_journals(request):
 
@@ -192,5 +201,30 @@ def get_featured_journals(request):
 
 
 
+@api_view(['GET'])
+def get_related_journals(request):
+
+    category = request.query_params.get('category')
+    blogs = BlogPost.objects.filter(is_published=True)
+
+    if category:
+      blogs = blogs.filter(category_name=category)
+
+    blogs = blogs.order_by('-created_at')[:5]
+    serializer = BlogsUserSerializer(blogs, many=True)
+    return Response(serializer.data, status= status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def blog_detail(request, slug):
+
+    try:
+        blog = get_object_or_404(BlogPost, slug=slug)
+        serializer = BlogPostSerializer(blog)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(str(e))
+        return Response({'error': 'Blog not found'}, status=status.HTTP_404_NOT_FOUND)
+    
 
 

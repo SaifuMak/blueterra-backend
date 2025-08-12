@@ -7,6 +7,7 @@ from django.urls import path,include
 from .views import *
 
 
+
 # router = DefaultRouter()
 # router.register(r'journals', BlogPostViewSet, basename='blogpost')
 
@@ -20,6 +21,12 @@ urlpatterns = [
    path('get-journals/', get_journals, name='get_journals'),
    path('get-featured-journals/', get_featured_journals, name='get_featured_journals'),
  path('upload-blog-image/', UploadBlogImageView.as_view(), name='upload-blog-image'),
+  path('blog/<slug:slug>/', blog_detail, name='blog-detail'),
+
+   path('get-related-journals/', get_related_journals, name='get_related_journals'),
+
+   path('get-five-journals/', get_five_journals, name='get_five_journals'),
+
 
 
     
