@@ -42,7 +42,7 @@ class FeaturedBlogsUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlogPost
-        fields = ['id','created_at','blog_content','title','preview_image','category_name','meta_title']
+        fields = ['id','created_at','blog_content','title','preview_image','category_name','meta_title','image_public_url']
 
 
 

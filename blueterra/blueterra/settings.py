@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-%+z_u^oamsnmfj_a&^v@k6!-2y+m8h#k^5iv+9jpov1vemz#++
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '167.172.65.88']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '167.172.65.88', 'app.myblueterra.com']
 
 CORS_ALLOW_ALL_ORIGINS = True
 
