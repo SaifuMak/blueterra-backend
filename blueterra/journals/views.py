@@ -18,6 +18,7 @@ from django.conf import settings
 
 import uuid
 import boto3
+from django.db.models import Q
 
 
 class UploadBlogImageView(APIView):
@@ -165,8 +166,6 @@ def get_journal_categories(request):
     return Response(serializer.data, status= status.HTTP_200_OK)
 
 
-
-
 @api_view(['GET'])
 def get_five_journals(request):
     blogs = BlogPost.objects.order_by('?')[:5]
@@ -178,15 +177,22 @@ def get_five_journals(request):
 def get_journals(request):
 
     category = request.query_params.get('category')
+    query = request.query_params.get('query')
+
     blogs = BlogPost.objects.all().filter(is_published=True).order_by('-created_at')
+
     if category and category != 'View All':
         blogs = blogs.filter(category_name = category)
+    
+    if query: 
+        blogs = blogs.filter(
+            Q(title__icontains=query) | Q(category_name__icontains=query)
+        )
 
     paginator = JournalPagination()
     result_page = paginator.paginate_queryset(blogs, request)
     serializer = BlogsUserSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
-
 
 
 @api_view(['GET'])
@@ -196,8 +202,6 @@ def get_featured_journals(request):
    
     serializer = FeaturedBlogsUserSerializer(blogs, many=True)
     return Response(serializer.data, status= status.HTTP_200_OK)
-
-
 
 
 @api_view(['GET'])

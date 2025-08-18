@@ -1,12 +1,10 @@
 
-
-
-
 from django.urls import path,include
 
 from .views import *
 
 urlpatterns = [
+    
    path('hello/', hello_api, name='grettings'),
    path('journals/', BlogPostAPIView.as_view(), name='create-blog'),
    path('journals/<int:pk>/', BlogPostDetailAPIView.as_view(), name='blog-detail'),
@@ -21,9 +19,5 @@ urlpatterns = [
    path('get-related-journals/', get_related_journals, name='get_related_journals'),
 
    path('get-five-journals/', get_five_journals, name='get_five_journals'),
-
-
-
-    
 
 ]
