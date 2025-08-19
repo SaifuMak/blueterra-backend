@@ -14,6 +14,7 @@ class Itinerary(R2PublicURLMixin, models.Model):
     country = models.CharField(max_length=255, blank=True, null=True)
     collection = models.CharField(max_length=255, blank=True, null=True)
     category = models.CharField(max_length=255, blank=True, null=True)
+    is_published = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -26,6 +27,11 @@ class Itinerary(R2PublicURLMixin, models.Model):
 
     file_field_name = "banner_image"
     url_field_name = "banner_image_public_url"
+
+    def delete(self, *args, **kwargs):
+        if self.banner_image:
+            self.banner_image.delete(save=False)  # removes from R2
+        super().delete(*args, **kwargs)  # removes model instance from DB
 
 
 class Day(R2PublicURLMixin, models.Model):
@@ -43,7 +49,6 @@ class Day(R2PublicURLMixin, models.Model):
 
     file_field_name = "image"
     url_field_name = "image_public_url"
-
 
 
 class Hotel(R2PublicURLMixin, models.Model):

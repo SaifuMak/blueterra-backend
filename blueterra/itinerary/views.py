@@ -6,6 +6,7 @@ from .models import *
 import json
 from  .serializers import ItinerarySerializer, ItineraryListSerializer
 from  journals.paginations import GeneralPagination
+from django.shortcuts import get_object_or_404
 
 
 
@@ -14,6 +15,16 @@ class ItineraryCreateAPIView(APIView):
     @transaction.atomic
     def post(self, request):
         try:
+            is_published_str = request.data.getlist("is_published")
+
+            if is_published_str:
+                is_published_str = is_published_str[0]  # take first value
+
+            is_published = str(is_published_str).lower() in ["true", "1", "yes"]
+
+            print(is_published_str)  # should now be 'true' or 'false'
+            print(is_published)      # should now be True/False
+
 
             # Main Itinerary
             itinerary = Itinerary.objects.create(
@@ -26,8 +37,8 @@ class ItineraryCreateAPIView(APIView):
                 collection=request.data.get("collection"),
                 category=request.data.get("category"),
                 banner_image=request.FILES.get("banner_image"),
+                is_published = is_published,
             )
-            print(request.data)
 
             # Destination Highlights
             destination_highlights = json.loads(request.data.get("destination_highlights", "[]"))
@@ -115,10 +126,35 @@ class ItineraryCreateAPIView(APIView):
 
 class ItineraryListAPIView(APIView):
     def get(self, request):
+        status_param = request.query_params.get('status')
         
         itineraries = Itinerary.objects.all()
+
+        if status_param == 'Published':
+            itineraries = itineraries.filter(is_published=True)
+        else:
+            itineraries = itineraries.filter(is_published=False)
+
         paginator = GeneralPagination()
         result_page = paginator.paginate_queryset(itineraries, request)
 
         serializer = ItineraryListSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
+    
+
+    def patch(self, request):
+        itinerary_id = request.data.get("id")
+        if not itinerary_id:
+            return Response({"error": "Itinerary is not selected."}, status=status.HTTP_400_BAD_REQUEST)
+
+        itinerary = get_object_or_404(Itinerary, pk=itinerary_id)
+
+        # If only is_published is being updated
+        if "status" in request.data and len(request.data) == 2:
+            if  request.data["status"] == 'publish':
+                itinerary.is_published = True
+            else:
+                itinerary.is_published =  False
+            itinerary.save()
+            return Response({"message": "Publish status updated successfully."}, status=status.HTTP_200_OK)
+        

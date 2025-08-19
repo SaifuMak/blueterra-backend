@@ -79,4 +79,4 @@ class ItineraryListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Itinerary
-        fields = ['title','collection','days']
+        fields = ['id','title','collection','is_published','days']
