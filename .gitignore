@@ -1,0 +1,11 @@
+# Ignore Python env
+env/
+venv/
+__pycache__/
+
+# Ignore database
+*.sqlite3
+*.sqlite3-journal
+
+# Ignore secrets
+.env
