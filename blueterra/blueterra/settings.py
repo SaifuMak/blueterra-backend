@@ -73,8 +73,6 @@ TEMPLATES = [
     },
 ]
 
-
-
 WSGI_APPLICATION = 'blueterra.wsgi.application'
 
 
