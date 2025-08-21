@@ -2,6 +2,7 @@ from django.db import models
 from blueterra.storages_backends import R2PublicStorage
 from .mixins import R2PublicURLMixin
 
+
 # Create your models here.
 class Itinerary(R2PublicURLMixin, models.Model):
     title = models.CharField(max_length=255)

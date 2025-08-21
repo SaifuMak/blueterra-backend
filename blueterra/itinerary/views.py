@@ -4,9 +4,10 @@ from rest_framework import status
 from django.db import transaction
 from .models import *
 import json
-from  .serializers import ItinerarySerializer, ItineraryListSerializer, ItineraryDetailsSerializer
+from  .serializers import ItinerarySerializer, ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer
 from  journals.paginations import GeneralPagination
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view
 
 
 
@@ -161,7 +162,7 @@ class ItineraryListAPIView(APIView):
 
 
 class ItineraryDetailView(APIView):
-    
+
     def get(self, request, pk):
 
         try:
@@ -402,3 +403,55 @@ class ItineraryDetailView(APIView):
         except Exception as e:
             transaction.set_rollback(True)
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+@api_view(['GET'])
+def itinerary_list(request):
+
+    categories = request.query_params.get('categories')
+    destinations = request.query_params.get('destinations')
+    countries = request.query_params.get('countries')
+    collections = request.query_params.get('collections')
+
+    print(request.query_params, 'query ')
+        
+    itineraries = Itinerary.objects.all().order_by('-created_at')
+
+    # Filter for categories
+    if categories:
+        categories_list = categories.split(',')
+        itineraries = itineraries.filter(category__in=categories_list)
+
+    # Filter for destinations
+    if destinations:
+        destinations_list = destinations.split(',')
+        itineraries = itineraries.filter(destination__in=destinations_list)
+
+    # Filter for countries
+    if countries:
+        countries_list = countries.split(',')
+        itineraries = itineraries.filter(country__in=countries_list)
+
+    # Filter for collections
+    if collections:
+        collections_list = collections.split(',')
+        itineraries = itineraries.filter(collection__in=collections_list)
+
+     
+    paginator = GeneralPagination()
+    result_page = paginator.paginate_queryset(itineraries, request)
+
+    serializer = ItineraryUserListingSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+
+@api_view(['GET'])
+def itinerary_detail(request, pk):
+
+        try:
+            itinerary = get_object_or_404(Itinerary, pk=pk)
+            serializer = UserItineraryDetailsSerializer(itinerary)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(str(e))
