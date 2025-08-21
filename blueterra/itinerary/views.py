@@ -23,8 +23,6 @@ class ItineraryCreateAPIView(APIView):
 
             is_published = str(is_published_str).lower() in ["true", "1", "yes"]
 
-            print(is_published_str)  # should now be 'true' or 'false'
-            print(is_published)      # should now be True/False
 
             # Main Itinerary
             itinerary = Itinerary.objects.create(
@@ -183,7 +181,6 @@ class ItineraryDetailView(APIView):
     def patch(self, request, pk):
         try:
             itinerary = get_object_or_404(Itinerary, pk=pk)
-            print(request.data)
 
             # Update simple fields
             itinerary.title = request.data.get("title", itinerary.title)
@@ -197,11 +194,9 @@ class ItineraryDetailView(APIView):
 
             # Banner image: replace only if new file uploaded
             if "banner_image" in request.FILES:
-                print('yes the image change for banner ')
                 itinerary.banner_image = request.FILES["banner_image"]
 
             itinerary.save()
-            # print(request.data)
 
              # Destination Highlights
             DestinationHighlight.objects.filter(itinerary=itinerary).delete()
@@ -313,7 +308,6 @@ class ItineraryDetailView(APIView):
                 }
                 hotels.append(hotel)
                 i += 1
-            print(hotels)
 
             existing_hotel_qs = Hotel.objects.filter(itinerary=itinerary)
             existing_ids = set(existing_hotel_qs.values_list('id', flat=True))
@@ -414,7 +408,6 @@ def itinerary_list(request):
     countries = request.query_params.get('countries')
     collections = request.query_params.get('collections')
 
-    print(request.query_params, 'query ')
         
     itineraries = Itinerary.objects.all().order_by('-created_at')
 

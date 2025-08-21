@@ -88,7 +88,6 @@ class BlogPostAPIView(APIView):
 
 
     def patch(self, request):
-        print(request.data)
         # return Response({"error": "Blog is not selected."}, status=status.HTTP_400_BAD_REQUEST)
 
         blog_id = request.data.get("id")
@@ -126,8 +125,6 @@ class BlogPostAPIView(APIView):
 class BlogPostDetailAPIView(APIView):
     
     def get(self, request, pk):
-
-        print('entered the blog details -------------------------')
 
         try:
             blog = get_object_or_404(BlogPost, pk=pk)
