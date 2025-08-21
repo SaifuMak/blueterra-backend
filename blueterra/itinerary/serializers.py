@@ -179,6 +179,7 @@ class UserItineraryDetailsSerializer(serializers.ModelSerializer):
     gallery = UserGalleryDetailsSerializer(many=True, read_only=True)
     featured_points = UserFeaturedPointDetailsSerializer(many=True, read_only=True)
 
+
     class Meta:
         model = Itinerary
         exclude = [
