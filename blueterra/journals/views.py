@@ -195,7 +195,7 @@ def get_journals(request):
 @api_view(['GET'])
 def get_featured_journals(request):
 
-    blogs = BlogPost.objects.all().filter(is_featured =True)[:3]
+    blogs = BlogPost.objects.all().order_by('-created_at').filter(is_featured =True)[:3]
    
     serializer = FeaturedBlogsUserSerializer(blogs, many=True)
     return Response(serializer.data, status= status.HTTP_200_OK)
