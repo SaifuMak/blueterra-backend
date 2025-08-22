@@ -41,6 +41,7 @@ class Day(R2PublicURLMixin, models.Model):
     description = models.TextField(blank=True, null=True)
     # image = models.ImageField(upload_to="days/", blank=True, null=True)
     image_title = models.CharField(max_length=255, blank=True, null=True)
+    order = models.PositiveIntegerField(default=0) 
     image = models.FileField(
         upload_to='itinerary/',
         storage=R2PublicStorage(),
@@ -50,6 +51,10 @@ class Day(R2PublicURLMixin, models.Model):
 
     file_field_name = "image"
     url_field_name = "image_public_url"
+
+    class Meta:
+        ordering = ["order"]  # always return in saved order
+
 
 
 class Hotel(R2PublicURLMixin, models.Model):
@@ -60,6 +65,7 @@ class Hotel(R2PublicURLMixin, models.Model):
     location = models.CharField(max_length=255, blank=True, null=True)
     map_link = models.URLField(blank=True, null=True)
     rating = models.FloatField(default=0)
+    order = models.PositiveIntegerField(default=0) 
     image = models.FileField(
         upload_to='itinerary/',
         storage=R2PublicStorage(),
@@ -69,6 +75,9 @@ class Hotel(R2PublicURLMixin, models.Model):
 
     file_field_name = "image"
     url_field_name = "image_public_url"
+
+    class Meta:
+        ordering = ["order"]  # always return in saved order
 
 class DestinationHighlight(models.Model):
     itinerary = models.ForeignKey(Itinerary, related_name="destination_highlights", on_delete=models.CASCADE)

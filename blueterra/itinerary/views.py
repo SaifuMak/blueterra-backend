@@ -87,6 +87,7 @@ class ItineraryCreateAPIView(APIView):
                     description=request.data.get(f"days[{index}][description]"),
                     image=request.FILES.get(f"days[{index}][image]"),
                     image_title=request.data.get(f"days[{index}][image_title]"),
+                    order = index
                 )
                 index += 1
 
@@ -102,6 +103,7 @@ class ItineraryCreateAPIView(APIView):
                     location=request.data.get(f"hotels[{index}][location]"),
                     map_link=request.data.get(f"hotels[{index}][mapLink]"),
                     rating=request.data.get(f"hotels[{index}][rating]") or 5,
+                    order = index
                 )
                 index += 1
 
@@ -254,10 +256,12 @@ class ItineraryDetailView(APIView):
                     "description": request.data.get(f"days[{i}][description]"),
                     "image": request.FILES.get(f"days[{i}][image]"),
                     "image_title": request.data.get(f"days[{i}][image_title]"),
+                    "order" : i
                 }
                 days.append(day)
                 i += 1
-            
+            print(days)
+
             existing_days_qs = Day.objects.filter(itinerary=itinerary)
             existing_ids = set(existing_days_qs.values_list('id', flat=True))
 
@@ -285,6 +289,8 @@ class ItineraryDetailView(APIView):
                         day = Day.objects.get(id=day_id, itinerary=itinerary)
                         day.title = day_data["title"]
                         day.description = day_data["description"]
+                        day.order = day_data["order"]
+
                         if day_data.get("image"):
                             day.image = day_data["image"]
                         day.image_title = day_data["image_title"]
@@ -305,9 +311,11 @@ class ItineraryDetailView(APIView):
                     "location": request.data.get(f"hotels[{i}][location]"),
                     "map_link": request.data.get(f"hotels[{i}][mapLink]"),
                     "rating": request.data.get(f"hotels[{i}][rating]"),
+                    "order" : i
                 }
                 hotels.append(hotel)
                 i += 1
+            
 
             existing_hotel_qs = Hotel.objects.filter(itinerary=itinerary)
             existing_ids = set(existing_hotel_qs.values_list('id', flat=True))
@@ -341,6 +349,7 @@ class ItineraryDetailView(APIView):
                             hotel.location = hotel_data["location"]
                             hotel.map_link = hotel_data["map_link"]
                             hotel.rating = hotel_data["rating"]
+                            day.order = day_data["order"]
                             hotel.save()
                         except Hotel.DoesNotExist:
                             Hotel.objects.create(itinerary=itinerary, **hotel_data)
@@ -392,7 +401,7 @@ class ItineraryDetailView(APIView):
                     except Gallery.DoesNotExist:
                         Gallery.objects.create(itinerary=itinerary, **item_data)
 
-            return Response({"message": "Itinerary created successfully!"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Itinerary updated successfully!"}, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             transaction.set_rollback(True)
