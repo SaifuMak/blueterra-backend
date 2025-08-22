@@ -260,7 +260,6 @@ class ItineraryDetailView(APIView):
                 }
                 days.append(day)
                 i += 1
-            print(days)
 
             existing_days_qs = Day.objects.filter(itinerary=itinerary)
             existing_ids = set(existing_days_qs.values_list('id', flat=True))
