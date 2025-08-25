@@ -183,10 +183,6 @@ class UserItineraryDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Itinerary
         exclude = [
-            "destination",
-            "country",
-            "collection",
-            "category",
             "is_published",
             "created_at",
             "updated_at",
