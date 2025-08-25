@@ -23,5 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
      path('', include('journals.urls')),
      path('', include('itinerary.urls')),
+     path('', include('authentication.urls')),
+
 
 ]
