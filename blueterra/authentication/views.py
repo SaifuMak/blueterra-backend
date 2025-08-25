@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import *
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -15,6 +14,8 @@ from django.conf import settings
 from .serializers import *
 from django.contrib.auth import get_user_model
 from .utils import *
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes,authentication_classes
 
 User = get_user_model()
 
@@ -157,6 +158,29 @@ class CheckLoginStatus(APIView):
           print(user_obj)
 
           return Response('okay',status=status.HTTP_200_OK)
+
+
+
+@api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    user = request.user
+    current_password = request.data.get("currentPassword")
+    new_password = request.data.get("newPassword")
+
+    if not current_password or not new_password:
+        return Response({"error": "Both current and new password are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Verify current password
+    if not user.check_password(current_password):
+        return Response({"error": "Current password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # new password
+    user.set_password(new_password)
+    user.save()
+    return perform_logout(request)
+
 
 
 @api_view(['POST'])
