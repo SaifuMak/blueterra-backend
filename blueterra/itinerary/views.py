@@ -417,7 +417,7 @@ def itinerary_list(request):
     collections = request.query_params.get('collections')
 
         
-    itineraries = Itinerary.objects.all().order_by('-created_at')
+    itineraries = Itinerary.objects.filter(is_published=True).order_by('-created_at')
 
     # Filter for categories
     if categories:
