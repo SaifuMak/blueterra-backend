@@ -8,8 +8,6 @@ from .serializers import *
 from .paginations import *
 # Create your views here.
 from rest_framework.parsers import MultiPartParser, FormParser
-
-
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -19,7 +17,6 @@ from django.conf import settings
 import uuid
 import boto3
 from django.db.models import Q
-
 
 class UploadBlogImageView(APIView):
 
