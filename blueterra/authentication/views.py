@@ -26,8 +26,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
 
         session_persist = request.COOKIES.get('session_persist')
         session_id = request.COOKIES.get('session_id')
-        print(session_id,'^^^^^^^^^^^^^^^ access')
-        print(session_persist,'^^^^^^^^^^^^^^^ refresh')
+       
         
         if not session_id:
             if not session_persist:

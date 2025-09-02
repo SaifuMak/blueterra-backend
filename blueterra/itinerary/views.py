@@ -4,11 +4,10 @@ from rest_framework import status
 from django.db import transaction
 from .models import *
 import json
-from  .serializers import ItinerarySerializer, ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer
+from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer
 from  journals.paginations import GeneralPagination
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
-
 
 
 class ItineraryCreateAPIView(APIView):
@@ -456,3 +455,127 @@ def itinerary_detail(request, pk):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             print(str(e))
+
+
+
+class CollectionsAdminAPIView(APIView):
+    def get(self,request):
+        collections = Collections.objects.all()
+        serializer = CollectionsListSerializer(collections, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @transaction.atomic
+    def patch(self, request, pk):
+
+        collection = get_object_or_404(Collections,pk=pk)
+
+        data = request.data
+
+        if not collection:
+            return Response('We could not find the requested collection', status=status.HTTP_404_NOT_FOUND)
+        
+        collection.title = data.get("title", collection.title)
+        collection.description = data.get("description", collection.description)
+
+        if "banner_image" in request.FILES:
+        #    include the collection.banner_image to trash
+           collection.banner_image =  request.FILES["banner_image"]
+
+        if "icon" in request.FILES:
+            #    include the collection.banner_image to trash
+           collection.icon =  request.FILES["icon"]
+
+        collection.save()
+
+        return Response({'message' :' Successfully updated the collection'}, status=status.HTTP_200_OK)
+
+
+
+class DestinationsAdminAPIView(APIView):
+    def get(self,request):
+        destinations = Destinations.objects.all()
+        serializer = DestinationsListSerializer(destinations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @transaction.atomic
+    def patch(self, request, pk):
+
+        destination = get_object_or_404(Destinations,pk=pk)
+
+        data = request.data
+
+        if not destination:
+            return Response('We could not find the requested destination', status=status.HTTP_404_NOT_FOUND)
+        
+        destination.title = data.get("title", destination.title)
+        destination.description = data.get("description", destination.description)
+
+        if "banner_image" in request.FILES:
+        #    include the collection.banner_image to trash
+           destination.banner_image =  request.FILES["banner_image"]
+
+        if "icon" in request.FILES:
+            #    include the collection.banner_image to trash
+           destination.icon =  request.FILES["icon"]
+
+        destination.save()
+
+        return Response({'message' :' Successfully updated the destination'}, status=status.HTTP_200_OK)
+
+
+
+
+
+class CountriesAdminAPIView(APIView):
+
+    def get(self,request):
+        countries = Countries.objects.all()
+        serializer = CountriesListSerializer(countries, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+    def post(self,request):
+        data = request.data
+
+        title = data.get("title", '')
+        destination = data.get("destination", '')
+        destination_instance = get_object_or_404(Destinations,title=destination)
+
+        Countries.objects.create(
+            title=title,
+            destination=destination_instance
+        )
+
+        return Response({'message' :' Successfully Created Country'}, status=status.HTTP_200_OK)
+    
+    def patch(self,request,pk):
+        country = get_object_or_404(Countries,pk=pk)
+        
+        data = request.data
+
+        title = data.get("title", '')
+        destination = data.get("destination", '')
+        destination_instance = get_object_or_404(Destinations,title=destination)
+
+        country.title = title
+        country.destination = destination_instance
+        country.save()
+
+        return Response({'message' :' Successfully Updated Country'}, status=status.HTTP_200_OK)
+    
+    def delete(self,request,pk):
+
+        country = get_object_or_404(Countries,pk=pk)
+        country.delete()
+        return Response({'message' :'Country deleted from records.'}, status=status.HTTP_200_OK)
+
+
+
+
+@api_view(['GET'])
+def destination_list(request):
+    destinations = Destinations.objects.values_list("title", flat=True)
+    return Response(list(destinations), status=status.HTTP_200_OK)
+    
+
+

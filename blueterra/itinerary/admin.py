@@ -11,5 +11,8 @@ admin.site.register(PackageExclusion)
 admin.site.register(MapRouting)
 admin.site.register(Gallery)
 admin.site.register(FeaturedPoint)
+admin.site.register(Collections)
+admin.site.register(Destinations)
+
 
 

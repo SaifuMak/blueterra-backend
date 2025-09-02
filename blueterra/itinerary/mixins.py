@@ -10,7 +10,6 @@ class R2PublicURLMixin(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        print('calling mixins ----------')
 
         file_field = getattr(self, self.file_field_name, None)
         if file_field:
