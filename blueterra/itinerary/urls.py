@@ -19,7 +19,6 @@ urlpatterns = [
    path("destinations-list/", destination_list, name="destination_list"),
    path("collections-list/", collection_list, name="collection_list"),
 
-
    path("countries/", CountriesAdminAPIView.as_view(), name="countries"),
    path("country/<int:pk>/", CountriesAdminAPIView.as_view(), name="country"),
 
@@ -27,7 +26,10 @@ urlpatterns = [
    path("category/<int:pk>/", CategoriesAdminAPIView.as_view(), name="category"),
 
 
+   path("filters-list/", filters_list, name="filters_list"),
 
+   path("get-collections/", collections, name="collections"),
+   path("get-destinations/", destinations, name="destinations"),
 
 
 ]

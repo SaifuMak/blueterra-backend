@@ -136,36 +136,6 @@ class ItinerarySerializer(serializers.ModelSerializer):
 
 
 
-class ItineraryListSerializer(serializers.ModelSerializer):
-    days = DaySerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Itinerary
-        fields = ['id','title','collection','is_published','days']
-
-
-class ItineraryDetailsSerializer(serializers.ModelSerializer):
-    days = DaySerializer(many=True, read_only=True)
-    hotels = HotelSerializer(many=True, read_only=True)
-    destination_highlights = DestinationHighlightSerializer(many=True, read_only=True)
-    signature_highlights = SignatureHighlightSerializer(many=True, read_only=True)
-    package_inclusions = PackageInclusionSerializer(many=True, read_only=True)
-    package_exclusions = PackageExclusionSerializer(many=True, read_only=True)
-    map_routing = MapRoutingSerializer(many=True, read_only=True)
-    gallery = GallerySerializer(many=True, read_only=True)
-    featured_points = FeaturedPointSerializer(many=True, read_only=True)
-    class Meta:
-        model = Itinerary
-        fields = '__all__'
-
-
-class ItineraryUserListingSerializer(serializers.ModelSerializer):
-    days = DayUserItinerarySerializer(many=True, read_only=True)
-    gallery = GalleryUserItinerarySerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Itinerary
-        fields = ['id','title','location_title','description','collection','category','is_published','days','gallery']
 
 
 class UserItineraryDetailsSerializer(serializers.ModelSerializer):
@@ -197,6 +167,24 @@ class CollectionsListSerializer(serializers.ModelSerializer):
         model = Collections
         fields = '__all__'
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categories
+        fields = ["title"]
+
+
+class CollectionsListUserSerializer(serializers.ModelSerializer):
+    categories = CategorySerializer(many=True, read_only=True) 
+    class Meta:
+        model = Collections
+        fields = ['title','description','banner_image_public_url','icon_public_url','categories']
+
+
+class DestinationsListUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Collections
+        fields = ['title','description','banner_image_public_url','icon_public_url']
 
 class DestinationsListSerializer(serializers.ModelSerializer):
 
@@ -211,12 +199,24 @@ class DestinationsFilterListSerializer(serializers.ModelSerializer):
         model = Destinations
         fields = ['title']
 
-
 class CollectionsFilterListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Collections
         fields = ['title']
+
+# class CategoriesFilterListSerializer(serializers.ModelSerializer):
+#     collection = CollectionsFilterListSerializer(read_only=True)
+#     class Meta:
+#         model = Categories
+#         fields = '__all__'
+
+# class CountriesFilterListSerializer(serializers.ModelSerializer):
+#     destination = DestinationsFilterListSerializer(read_only=True)
+
+#     class Meta:
+#         model = Collections
+#         fields = '__all__'
 
 class CountriesListSerializer(serializers.ModelSerializer):
     destination = DestinationsFilterListSerializer(read_only=True)
@@ -224,10 +224,50 @@ class CountriesListSerializer(serializers.ModelSerializer):
         model = Countries
         fields = '__all__'
 
-
-
 class CategoriesListSerializer(serializers.ModelSerializer):
     collection = CollectionsFilterListSerializer(read_only=True)
     class Meta:
         model = Categories
         fields = '__all__'
+
+
+
+class ItineraryDetailsSerializer(serializers.ModelSerializer):
+
+    destination = DestinationsFilterListSerializer(read_only=True)
+    collection = CollectionsFilterListSerializer(read_only=True)
+    country = CountriesListSerializer(read_only=True)
+    category = CategoriesListSerializer(read_only=True)
+
+    days = DaySerializer(many=True, read_only=True)
+    hotels = HotelSerializer(many=True, read_only=True)
+    destination_highlights = DestinationHighlightSerializer(many=True, read_only=True)
+    signature_highlights = SignatureHighlightSerializer(many=True, read_only=True)
+    package_inclusions = PackageInclusionSerializer(many=True, read_only=True)
+    package_exclusions = PackageExclusionSerializer(many=True, read_only=True)
+    map_routing = MapRoutingSerializer(many=True, read_only=True)
+    gallery = GallerySerializer(many=True, read_only=True)
+    featured_points = FeaturedPointSerializer(many=True, read_only=True)
+    class Meta:
+        model = Itinerary
+        fields = '__all__'
+
+
+class ItineraryListSerializer(serializers.ModelSerializer):
+    days = DaySerializer(many=True, read_only=True)
+    collection = CollectionsFilterListSerializer(read_only=True)
+
+    class Meta:
+        model = Itinerary
+        fields = ['id','title','collection','is_published','days']
+
+
+
+class ItineraryUserListingSerializer(serializers.ModelSerializer):
+    days = DayUserItinerarySerializer(many=True, read_only=True)
+    gallery = GalleryUserItinerarySerializer(many=True, read_only=True)
+    category = CategoriesListSerializer(read_only=True)
+
+    class Meta:
+        model = Itinerary
+        fields = ['id','title','location_title','description','collection','category','is_published','days','gallery']

@@ -3,19 +3,130 @@ from blueterra.storages_backends import R2PublicStorage
 from .mixins import R2PublicURLMixin
 
 
+
+
+
+
+class Collections(models.Model):
+    title = models.CharField(max_length=50)
+    description = models.CharField(max_length=1000)
+    banner_image = models.FileField(
+        upload_to='collections/',
+        storage=R2PublicStorage(),
+        blank=True, null=True
+    )
+    icon = models.FileField(
+        upload_to='collections/',
+        storage=R2PublicStorage(),
+        blank=True, null=True
+    )
+
+    banner_image_public_url  = models.URLField(null=True, blank=True)
+    icon_public_url  = models.URLField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+         
+        base_url = "https://pub-c75e3733f0bd4a078b015afdd3afc354.r2.dev/"
+
+        updated_fields = []
+
+        if self.banner_image:
+                filename = self.banner_image.name
+                new_url = f"{base_url}{filename}"
+                if self.banner_image_public_url != new_url:
+                    self.banner_image_public_url = new_url
+                    updated_fields.append("banner_image_public_url")
+
+        if self.icon:
+                filename = self.icon.name
+                new_url = f"{base_url}{filename}"
+                if self.icon_public_url != new_url:
+                    self.icon_public_url = new_url
+                    updated_fields.append("icon_public_url")
+
+        if updated_fields:
+                super().save(update_fields=updated_fields)
+
+    def __str__(self):
+         return self.title
+    
+
+
+class Destinations(models.Model):
+    title = models.CharField(max_length=50)
+    description = models.CharField(max_length=1000)
+    banner_image = models.FileField(
+        upload_to='destinations/',
+        storage=R2PublicStorage(),
+        blank=True, null=True
+    )
+    icon = models.FileField(
+        upload_to='destinations/',
+        storage=R2PublicStorage(),
+        blank=True, null=True
+    )
+
+    banner_image_public_url  = models.URLField(null=True, blank=True)
+    icon_public_url  = models.URLField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+         
+        base_url = "https://pub-c75e3733f0bd4a078b015afdd3afc354.r2.dev/"
+
+        updated_fields = []
+
+        if self.banner_image:
+                filename = self.banner_image.name
+                new_url = f"{base_url}{filename}"
+                if self.banner_image_public_url != new_url:
+                    self.banner_image_public_url = new_url
+                    updated_fields.append("banner_image_public_url")
+
+        if self.icon:
+                filename = self.icon.name
+                new_url = f"{base_url}{filename}"
+                if self.icon_public_url != new_url:
+                    self.icon_public_url = new_url
+                    updated_fields.append("icon_public_url")
+
+        if updated_fields:
+                super().save(update_fields=updated_fields)
+
+    def __str__(self):
+         return self.title
+
+
+class Countries(models.Model):
+    destination = models.ForeignKey(Destinations,on_delete=models.CASCADE, related_name="countries" )
+    title = models.CharField(max_length=100)
+
+    def __str__(self):
+         return self.title
+
+
+
+class Categories(models.Model):
+    collection = models.ForeignKey(Collections,on_delete=models.CASCADE, related_name="categories" )
+    title = models.CharField(max_length=100)
+
+    def __str__(self):
+         return self.title
+
+
+
 # Create your models here.
 class Itinerary(R2PublicURLMixin, models.Model):
     title = models.CharField(max_length=255)
     location_title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     color = models.CharField(max_length=20)
-    # banner_image = models.ImageField(upload_to="banners/", blank=True, null=True)
-
-    destination = models.CharField(max_length=255, blank=True, null=True)
-    country = models.CharField(max_length=255, blank=True, null=True)
-    collection = models.CharField(max_length=255, blank=True, null=True)
-    category = models.CharField(max_length=255, blank=True, null=True)
     is_published = models.BooleanField(default=False)
+    destination = models.ForeignKey(Destinations, on_delete=models.SET_NULL, null=True, blank=True)
+    country = models.ForeignKey(Countries, on_delete=models.SET_NULL, null=True, blank=True)
+    collection = models.ForeignKey(Collections, on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -125,111 +236,3 @@ class FeaturedPoint(models.Model):
     suggested_date = models.CharField(max_length=255, blank=True, null=True)
     price = models.CharField(max_length=255, blank=True, null=True)
     additional_information = models.CharField(max_length=255, blank=True, null=True)
-
-
-class Collections(models.Model):
-    title = models.CharField(max_length=50)
-    description = models.CharField(max_length=1000)
-    banner_image = models.FileField(
-        upload_to='collections/',
-        storage=R2PublicStorage(),
-        blank=True, null=True
-    )
-    icon = models.FileField(
-        upload_to='collections/',
-        storage=R2PublicStorage(),
-        blank=True, null=True
-    )
-
-    banner_image_public_url  = models.URLField(null=True, blank=True)
-    icon_public_url  = models.URLField(null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-         
-        base_url = "https://pub-c75e3733f0bd4a078b015afdd3afc354.r2.dev/"
-
-        updated_fields = []
-
-        if self.banner_image:
-                filename = self.banner_image.name
-                new_url = f"{base_url}{filename}"
-                if self.banner_image_public_url != new_url:
-                    self.banner_image_public_url = new_url
-                    updated_fields.append("banner_image_public_url")
-
-        if self.icon:
-                filename = self.icon.name
-                new_url = f"{base_url}{filename}"
-                if self.icon_public_url != new_url:
-                    self.icon_public_url = new_url
-                    updated_fields.append("icon_public_url")
-
-        if updated_fields:
-                super().save(update_fields=updated_fields)
-
-    def __str__(self):
-         return self.title
-    
-
-
-class Destinations(models.Model):
-    title = models.CharField(max_length=50)
-    description = models.CharField(max_length=1000)
-    banner_image = models.FileField(
-        upload_to='destinations/',
-        storage=R2PublicStorage(),
-        blank=True, null=True
-    )
-    icon = models.FileField(
-        upload_to='destinations/',
-        storage=R2PublicStorage(),
-        blank=True, null=True
-    )
-
-    banner_image_public_url  = models.URLField(null=True, blank=True)
-    icon_public_url  = models.URLField(null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-         
-        base_url = "https://pub-c75e3733f0bd4a078b015afdd3afc354.r2.dev/"
-
-        updated_fields = []
-
-        if self.banner_image:
-                filename = self.banner_image.name
-                new_url = f"{base_url}{filename}"
-                if self.banner_image_public_url != new_url:
-                    self.banner_image_public_url = new_url
-                    updated_fields.append("banner_image_public_url")
-
-        if self.icon:
-                filename = self.icon.name
-                new_url = f"{base_url}{filename}"
-                if self.icon_public_url != new_url:
-                    self.icon_public_url = new_url
-                    updated_fields.append("icon_public_url")
-
-        if updated_fields:
-                super().save(update_fields=updated_fields)
-
-    def __str__(self):
-         return self.title
-
-
-class Countries(models.Model):
-    destination = models.ForeignKey(Destinations,on_delete=models.CASCADE, related_name="countries" )
-    title = models.CharField(max_length=100)
-
-    def __str__(self):
-         return self.title
-
-
-
-class Categories(models.Model):
-    collection = models.ForeignKey(Collections,on_delete=models.CASCADE, related_name="categories" )
-    title = models.CharField(max_length=100)
-
-    def __str__(self):
-         return self.title

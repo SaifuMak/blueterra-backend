@@ -4,7 +4,8 @@ from rest_framework import status
 from django.db import transaction
 from .models import *
 import json
-from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer,CategoriesListSerializer
+from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer,CategoriesListSerializer,CollectionsFilterListSerializer,DestinationsFilterListSerializer,CollectionsListUserSerializer,DestinationsListUserSerializer
+
 from  journals.paginations import GeneralPagination
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
@@ -22,6 +23,23 @@ class ItineraryCreateAPIView(APIView):
 
             is_published = str(is_published_str).lower() in ["true", "1", "yes"]
 
+             # Lookups by title
+            destination = None
+            if request.data.get("destination"):
+                destination = get_object_or_404(Destinations, title=request.data.get("destination"))
+
+            country = None
+            if request.data.get("country"):
+                country = get_object_or_404(Countries, title=request.data.get("country"))
+
+            collection = None
+            if request.data.get("collection"):
+                collection = get_object_or_404(Collections, title=request.data.get("collection"))
+
+            category = None
+            if request.data.get("category"):
+                category = get_object_or_404(Categories, title=request.data.get("category"))
+
 
             # Main Itinerary
             itinerary = Itinerary.objects.create(
@@ -29,10 +47,10 @@ class ItineraryCreateAPIView(APIView):
                 location_title=request.data.get("location_title"),
                 description=request.data.get("description"),
                 color=request.data.get("color"),
-                destination=request.data.get("destination"),
-                country=request.data.get("country"),
-                collection=request.data.get("collection"),
-                category=request.data.get("category"),
+                destination=destination,
+                country=country,
+                collection=collection,
+                category=category,
                 banner_image=request.FILES.get("banner_image"),
                 is_published = is_published,
             )
@@ -188,10 +206,27 @@ class ItineraryDetailView(APIView):
             itinerary.location_title = request.data.get("location_title", itinerary.location_title)
             itinerary.description = request.data.get("description", itinerary.description)
             itinerary.color = request.data.get("color", itinerary.color)
-            itinerary.destination = request.data.get("destination", itinerary.destination)
-            itinerary.country = request.data.get("country", itinerary.country)
-            itinerary.collection = request.data.get("collection", itinerary.collection)
-            itinerary.category = request.data.get("category", itinerary.category)
+           
+            # itinerary.destination = request.data.get("destination", itinerary.destination)
+            # itinerary.country = request.data.get("country", itinerary.country)
+            # itinerary.collection = request.data.get("collection", itinerary.collection)
+            # itinerary.category = request.data.get("category", itinerary.category)
+
+            if "destination" in request.data:
+                val = request.data.get("destination")
+                itinerary.destination = get_object_or_404(Destinations, title=val) if val else itinerary.destination
+
+            if "country" in request.data:
+                val = request.data.get("country")
+                itinerary.country = get_object_or_404(Countries, title=val) if val else itinerary.country
+
+            if "collection" in request.data:
+                val = request.data.get("collection")
+                itinerary.collection = get_object_or_404(Collections, title=val) if val else itinerary.collection
+
+            if "category" in request.data:
+                val = request.data.get("category")
+                itinerary.category = get_object_or_404(Categories, title=val) if val else itinerary.category
 
             # Banner image: replace only if new file uploaded
             if "banner_image" in request.FILES:
@@ -415,28 +450,30 @@ def itinerary_list(request):
     countries = request.query_params.get('countries')
     collections = request.query_params.get('collections')
 
+    print(collections)
+
         
     itineraries = Itinerary.objects.filter(is_published=True).order_by('-created_at')
 
     # Filter for categories
     if categories:
         categories_list = categories.split(',')
-        itineraries = itineraries.filter(category__in=categories_list)
+        itineraries = itineraries.filter(category__title__in=categories_list)
 
     # Filter for destinations
     if destinations:
         destinations_list = destinations.split(',')
-        itineraries = itineraries.filter(destination__in=destinations_list)
+        itineraries = itineraries.filter(destination__title__in=destinations_list)
 
     # Filter for countries
     if countries:
         countries_list = countries.split(',')
-        itineraries = itineraries.filter(country__in=countries_list)
+        itineraries = itineraries.filter(country__title__in=countries_list)
 
     # Filter for collections
     if collections:
         collections_list = collections.split(',')
-        itineraries = itineraries.filter(collection__in=collections_list)
+        itineraries = itineraries.filter(collection__title__in=collections_list)
 
      
     paginator = GeneralPagination()
@@ -629,5 +666,37 @@ def destination_list(request):
 def collection_list(request):
     collections = Collections.objects.values_list("title", flat=True)
     return Response(list(collections), status=status.HTTP_200_OK)
-    
 
+
+@api_view(['GET'])
+def collections(request):
+    collections = Collections.objects.all()
+    serializer = CollectionsListUserSerializer(collections,many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def destinations(request):
+    destinations = Destinations.objects.all()
+    serializer = DestinationsListUserSerializer(destinations,many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def filters_list(request):
+
+    collections = Collections.objects.all()
+    collection_serialized_data = CollectionsFilterListSerializer(collections, many=True)
+
+    destinations = Destinations.objects.all()
+    destinations_serialized_data = DestinationsFilterListSerializer(destinations, many=True)
+
+    countries = Countries.objects.all()
+    countries_serialized_data = CountriesListSerializer(countries, many=True)
+
+    categories = Categories.objects.all()
+    categories_serialized_data = CategoriesListSerializer(categories, many=True)
+
+    return Response({'collections' : collection_serialized_data.data,
+                     'destinations' : destinations_serialized_data.data, 
+                     'countries' : countries_serialized_data.data,
+                     'categories' : categories_serialized_data.data, }
+                    , status=status.HTTP_200_OK)
