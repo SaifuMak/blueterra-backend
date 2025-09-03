@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (
     Itinerary, Day, Hotel, DestinationHighlight, SignatureHighlight,
-    PackageInclusion, PackageExclusion, MapRouting, Gallery, FeaturedPoint, Collections, Destinations, Countries
+    PackageInclusion, PackageExclusion, MapRouting, Gallery, FeaturedPoint, Collections, Destinations, Countries, Categories
 )
 
 class DaySerializer(serializers.ModelSerializer):
@@ -211,8 +211,23 @@ class DestinationsFilterListSerializer(serializers.ModelSerializer):
         model = Destinations
         fields = ['title']
 
+
+class CollectionsFilterListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Collections
+        fields = ['title']
+
 class CountriesListSerializer(serializers.ModelSerializer):
     destination = DestinationsFilterListSerializer(read_only=True)
     class Meta:
         model = Countries
+        fields = '__all__'
+
+
+
+class CategoriesListSerializer(serializers.ModelSerializer):
+    collection = CollectionsFilterListSerializer(read_only=True)
+    class Meta:
+        model = Categories
         fields = '__all__'

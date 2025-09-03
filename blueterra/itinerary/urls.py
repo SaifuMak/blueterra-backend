@@ -17,9 +17,16 @@ urlpatterns = [
    path("destinations/<int:pk>/", DestinationsAdminAPIView.as_view(), name="destination"),
 
    path("destinations-list/", destination_list, name="destination_list"),
+   path("collections-list/", collection_list, name="collection_list"),
+
 
    path("countries/", CountriesAdminAPIView.as_view(), name="countries"),
    path("country/<int:pk>/", CountriesAdminAPIView.as_view(), name="country"),
+
+   path("categories/", CategoriesAdminAPIView.as_view(), name="categories"),
+   path("category/<int:pk>/", CategoriesAdminAPIView.as_view(), name="category"),
+
+
 
 
 

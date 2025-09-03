@@ -4,7 +4,7 @@ from rest_framework import status
 from django.db import transaction
 from .models import *
 import json
-from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer
+from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer,CategoriesListSerializer
 from  journals.paginations import GeneralPagination
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
@@ -572,10 +572,62 @@ class CountriesAdminAPIView(APIView):
 
 
 
+
+class CategoriesAdminAPIView(APIView):
+
+    def get(self,request):
+        categories = Categories.objects.all()
+        serializer = CategoriesListSerializer(categories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+    def post(self,request):
+        data = request.data
+
+        title = data.get("title", '')
+        collection = data.get("collection", '')
+        collection_instance = get_object_or_404(Collections,title=collection)
+
+        Categories.objects.create(
+            title=title,
+            collection=collection_instance
+        )
+
+        return Response({'message' :' Successfully Created Category'}, status=status.HTTP_200_OK)
+    
+    def patch(self,request,pk):
+        category = get_object_or_404(Categories,pk=pk)
+        
+        data = request.data
+
+        title = data.get("title", '')
+        collection = data.get("collection", '')
+        collection_instance = get_object_or_404(Collections,title=collection)
+
+        category.title = title
+        category.collection = collection_instance
+        category.save()
+
+        return Response({'message' :' Successfully Updated Category'}, status=status.HTTP_200_OK)
+    
+    def delete(self,request,pk):
+
+        category = get_object_or_404(Categories,pk=pk)
+        category.delete()
+        return Response({'message' :'Category deleted from records.'}, status=status.HTTP_200_OK)
+
+
+
+
 @api_view(['GET'])
 def destination_list(request):
     destinations = Destinations.objects.values_list("title", flat=True)
     return Response(list(destinations), status=status.HTTP_200_OK)
     
 
+@api_view(['GET'])
+def collection_list(request):
+    collections = Collections.objects.values_list("title", flat=True)
+    return Response(list(collections), status=status.HTTP_200_OK)
+    
 

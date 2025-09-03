@@ -224,3 +224,12 @@ class Countries(models.Model):
 
     def __str__(self):
          return self.title
+
+
+
+class Categories(models.Model):
+    collection = models.ForeignKey(Collections,on_delete=models.CASCADE, related_name="categories" )
+    title = models.CharField(max_length=100)
+
+    def __str__(self):
+         return self.title
