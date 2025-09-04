@@ -16,6 +16,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-%+z_u^oamsnmfj_a&^v@k6!-2y+m8h#k^5iv+9jpov1vemz#++'
 
@@ -79,9 +85,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'blueterra.wsgi.application'
 
 
-AWS_ACCESS_KEY_ID = '7e7fc05e041d3503dd0c9e57652a48cd'
-AWS_SECRET_ACCESS_KEY = 'e0ac5975ae846ee4a2fe5d114afa97b569490c0b47e302bc679f24b6d098c8ab'
-AWS_STORAGE_BUCKET_NAME = 'mybucket'
+# AWS_ACCESS_KEY_ID = '7e7fc05e041d3503dd0c9e57652a48cd'
+# AWS_SECRET_ACCESS_KEY = 'e0ac5975ae846ee4a2fe5d114afa97b569490c0b47e302bc679f24b6d098c8ab'
+# AWS_STORAGE_BUCKET_NAME = 'mybucket'
+
+
+AWS_ACCESS_KEY_ID =  os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 # AWS_S3_ENDPOINT_URL = 'https://f30c97b5e92eb15944ca7c0536b63e54.r2.cloudflarestorage.com'
 AWS_S3_REGION_NAME = ''
 # AWS_S3_FILE_OVERWRITE = False
@@ -89,7 +100,6 @@ AWS_S3_REGION_NAME = ''
 
 AWS_DEFAULT_ACL = 'public-read'
 AWS_QUERYSTRING_AUTH = False  # <-- This disables signed URLs
-
 
 
 REST_FRAMEWORK = {

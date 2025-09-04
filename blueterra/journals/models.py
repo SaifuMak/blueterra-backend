@@ -1,5 +1,6 @@
 from django.db import models
 # from storages.backends.s3boto3 import S3Boto3Storage
+from blueterra.const import R2_PUBLIC_URL
 
 from blueterra.storages_backends import R2PublicStorage
 # Create your models here.
@@ -47,7 +48,7 @@ class BlogPost(models.Model):
     #     )
     # )
     preview_image = models.FileField(
-        upload_to='uploads/',
+        upload_to='blogs/',
         storage=R2PublicStorage()
     )
     image_public_url = models.URLField(blank=True, null=True)
@@ -57,8 +58,8 @@ class BlogPost(models.Model):
         super().save(*args, **kwargs)  # Save image first
 
         if self.preview_image:
-            filename = self.preview_image.name.replace('uploads/', '')
-            new_url = f"https://pub-c75e3733f0bd4a078b015afdd3afc354.r2.dev/uploads/{filename}"
+            filename = self.preview_image.name.replace('blogs/', '')
+            new_url = f"{R2_PUBLIC_URL}blogs/{filename}"
 
             if self.image_public_url != new_url:
                 self.image_public_url = new_url

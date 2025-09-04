@@ -17,6 +17,8 @@ from django.conf import settings
 import uuid
 import boto3
 from django.db.models import Q
+from blueterra.const import R2_PUBLIC_URL, S3_ENDPOINT
+
 
 class UploadBlogImageView(APIView):
 
@@ -34,7 +36,7 @@ class UploadBlogImageView(APIView):
             's3',
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-             endpoint_url="https://f30c97b5e92eb15944ca7c0536b63e54.r2.cloudflarestorage.com"
+             endpoint_url={S3_ENDPOINT}
         )
 
         s3.upload_fileobj(
@@ -44,7 +46,7 @@ class UploadBlogImageView(APIView):
             ExtraArgs={'ACL': 'public-read'}  # make it public
         )
 
-        file_url = f"https://pub-c75e3733f0bd4a078b015afdd3afc354.r2.dev/{file_name}"
+        file_url = f"{R2_PUBLIC_URL}{file_name}"
         return JsonResponse({"url": file_url})
 
 

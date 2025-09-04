@@ -1,4 +1,5 @@
 from django.db import models
+from blueterra.const import R2_PUBLIC_URL
 
 class R2PublicURLMixin(models.Model):
     file_field_name = None
@@ -14,7 +15,7 @@ class R2PublicURLMixin(models.Model):
         file_field = getattr(self, self.file_field_name, None)
         if file_field:
             filename = file_field.name.replace(self.path_prefix, "")
-            new_url = f"https://pub-c75e3733f0bd4a078b015afdd3afc354.r2.dev/{self.path_prefix}{filename}"
+            new_url = f"{R2_PUBLIC_URL}{self.path_prefix}{filename}"
 
             if getattr(self, self.url_field_name) != new_url:
                 setattr(self, self.url_field_name, new_url)

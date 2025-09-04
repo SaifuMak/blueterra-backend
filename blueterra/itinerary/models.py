@@ -1,22 +1,19 @@
 from django.db import models
 from blueterra.storages_backends import R2PublicStorage
 from .mixins import R2PublicURLMixin
-
-
-
-
+from blueterra.const import R2_PUBLIC_URL
 
 
 class Collections(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=1000)
     banner_image = models.FileField(
-        upload_to='collections/',
+        upload_to='collections/banners',
         storage=R2PublicStorage(),
         blank=True, null=True
     )
     icon = models.FileField(
-        upload_to='collections/',
+        upload_to='collections/icons',
         storage=R2PublicStorage(),
         blank=True, null=True
     )
@@ -27,7 +24,7 @@ class Collections(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
          
-        base_url = "https://pub-c75e3733f0bd4a078b015afdd3afc354.r2.dev/"
+        base_url = R2_PUBLIC_URL
 
         updated_fields = []
 
@@ -57,12 +54,12 @@ class Destinations(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=1000)
     banner_image = models.FileField(
-        upload_to='destinations/',
+        upload_to='destinations/banners',
         storage=R2PublicStorage(),
         blank=True, null=True
     )
     icon = models.FileField(
-        upload_to='destinations/',
+        upload_to='destinations/icons',
         storage=R2PublicStorage(),
         blank=True, null=True
     )
@@ -73,7 +70,7 @@ class Destinations(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
          
-        base_url = "https://pub-c75e3733f0bd4a078b015afdd3afc354.r2.dev/"
+        base_url = R2_PUBLIC_URL
 
         updated_fields = []
 
@@ -131,7 +128,7 @@ class Itinerary(R2PublicURLMixin, models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     banner_image = models.FileField(
-        upload_to='itinerary/',
+        upload_to='itinerary/banner',
         storage=R2PublicStorage(),
         blank=True, null=True
     )
@@ -139,6 +136,7 @@ class Itinerary(R2PublicURLMixin, models.Model):
 
     file_field_name = "banner_image"
     url_field_name = "banner_image_public_url"
+    path_prefix="itinerary/banner"
 
     def delete(self, *args, **kwargs):
         if self.banner_image:
@@ -154,7 +152,7 @@ class Day(R2PublicURLMixin, models.Model):
     image_title = models.CharField(max_length=255, blank=True, null=True)
     order = models.PositiveIntegerField(default=0) 
     image = models.FileField(
-        upload_to='itinerary/',
+        upload_to='itinerary/places',
         storage=R2PublicStorage(),
         blank=True, null=True
     )
@@ -162,6 +160,7 @@ class Day(R2PublicURLMixin, models.Model):
 
     file_field_name = "image"
     url_field_name = "image_public_url"
+    path_prefix="itinerary/places"
 
     class Meta:
         ordering = ["order"]  # always return in saved order
@@ -178,7 +177,7 @@ class Hotel(R2PublicURLMixin, models.Model):
     rating = models.FloatField(default=0)
     order = models.PositiveIntegerField(default=0) 
     image = models.FileField(
-        upload_to='itinerary/',
+        upload_to='itinerary/hotels',
         storage=R2PublicStorage(),
         blank=True, null=True
     )
@@ -186,6 +185,7 @@ class Hotel(R2PublicURLMixin, models.Model):
 
     file_field_name = "image"
     url_field_name = "image_public_url"
+    path_prefix="itinerary/hotels"
 
     class Meta:
         ordering = ["order"]  # always return in saved order
@@ -221,7 +221,7 @@ class Gallery(R2PublicURLMixin, models.Model):
     itinerary = models.ForeignKey(Itinerary, related_name="gallery", on_delete=models.CASCADE)
     title = models.CharField(max_length=255, blank=True, null=True)
     image = models.FileField(
-        upload_to='itinerary/',
+        upload_to='itinerary/gallery',
         storage=R2PublicStorage(),
         blank=True, null=True
     )
@@ -229,6 +229,7 @@ class Gallery(R2PublicURLMixin, models.Model):
 
     file_field_name = "image"
     url_field_name = "image_public_url"
+    path_prefix="itinerary/gallery"
 
 
 class FeaturedPoint(models.Model):
