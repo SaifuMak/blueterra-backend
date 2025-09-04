@@ -138,28 +138,6 @@ class ItinerarySerializer(serializers.ModelSerializer):
 
 
 
-class UserItineraryDetailsSerializer(serializers.ModelSerializer):
-    days = UserDayDetailsSerializer(many=True, read_only=True)
-    hotels = UserHotelDetailsSerializer(many=True, read_only=True)
-    destination_highlights = UserDestinationHighlightDetailsSerializer(many=True, read_only=True)
-    signature_highlights = UserSignatureHighlightDetailsSerializer(many=True, read_only=True)
-    package_inclusions = UserPackageInclusionDetailsSerializer(many=True, read_only=True)
-    package_exclusions = UserPackageExclusionDetailsSerializer(many=True, read_only=True)
-    map_routing = UserMapRoutingDetailsSerializer(many=True, read_only=True)
-    gallery = UserGalleryDetailsSerializer(many=True, read_only=True)
-    featured_points = UserFeaturedPointDetailsSerializer(many=True, read_only=True)
-
-
-    class Meta:
-        model = Itinerary
-        exclude = [
-            "is_published",
-            "created_at",
-            "updated_at",
-            "banner_image",
-        ]
-
-
 
 class CollectionsListSerializer(serializers.ModelSerializer):
 
@@ -204,6 +182,32 @@ class CollectionsFilterListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collections
         fields = ['title']
+
+
+
+
+class UserItineraryDetailsSerializer(serializers.ModelSerializer):
+    category =CategorySerializer(read_only=True)
+    days = UserDayDetailsSerializer(many=True, read_only=True)
+    hotels = UserHotelDetailsSerializer(many=True, read_only=True)
+    destination_highlights = UserDestinationHighlightDetailsSerializer(many=True, read_only=True)
+    signature_highlights = UserSignatureHighlightDetailsSerializer(many=True, read_only=True)
+    package_inclusions = UserPackageInclusionDetailsSerializer(many=True, read_only=True)
+    package_exclusions = UserPackageExclusionDetailsSerializer(many=True, read_only=True)
+    map_routing = UserMapRoutingDetailsSerializer(many=True, read_only=True)
+    gallery = UserGalleryDetailsSerializer(many=True, read_only=True)
+    featured_points = UserFeaturedPointDetailsSerializer(many=True, read_only=True)
+
+
+    class Meta:
+        model = Itinerary
+        exclude = [
+            "is_published",
+            "created_at",
+            "updated_at",
+            "banner_image",
+        ]
+
 
 # class CategoriesFilterListSerializer(serializers.ModelSerializer):
 #     collection = CollectionsFilterListSerializer(read_only=True)
