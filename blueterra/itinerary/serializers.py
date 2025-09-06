@@ -151,18 +151,24 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ["title"]
 
 
+class CountriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Countries
+        fields = ["title"]
+
 class CollectionsListUserSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True) 
     class Meta:
         model = Collections
-        fields = ['title','description','banner_image_public_url','icon_public_url','categories']
+        fields = ['title','description','popular_journeys','banner_image_public_url','icon_public_url','categories']
 
 
 class DestinationsListUserSerializer(serializers.ModelSerializer):
-
+    countries = CountriesSerializer(many=True, read_only=True) 
+     
     class Meta:
         model = Collections
-        fields = ['title','description','banner_image_public_url','icon_public_url']
+        fields = ['title','description','banner_image_public_url','icon_public_url', 'countries']
 
 class DestinationsListSerializer(serializers.ModelSerializer):
 
@@ -267,11 +273,18 @@ class ItineraryListSerializer(serializers.ModelSerializer):
 
 
 
+class FeaturedPointsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FeaturedPoint
+        fields = ['price']
+
 class ItineraryUserListingSerializer(serializers.ModelSerializer):
+    featured_points = FeaturedPointsSerializer(many=True, read_only=True)
     days = DayUserItinerarySerializer(many=True, read_only=True)
     gallery = GalleryUserItinerarySerializer(many=True, read_only=True)
     category = CategoriesListSerializer(read_only=True)
 
     class Meta:
         model = Itinerary
-        fields = ['id','title','location_title','description','collection','category','is_published','days','gallery']
+        fields = ['id','title','location_title','description','general_rating','featured_points','collection','category','is_published','days','gallery']

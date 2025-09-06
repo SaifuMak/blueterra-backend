@@ -7,6 +7,7 @@ from blueterra.const import R2_PUBLIC_URL
 class Collections(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=1000)
+    popular_journeys = models.CharField(max_length=2000,null=True, blank=True)
     banner_image = models.FileField(
         upload_to='collections/banners',
         storage=R2PublicStorage(),
@@ -110,7 +111,7 @@ class Categories(models.Model):
 
     def __str__(self):
          return self.title
-
+    
 
 
 # Create your models here.
@@ -119,6 +120,7 @@ class Itinerary(R2PublicURLMixin, models.Model):
     location_title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     color = models.CharField(max_length=20)
+    general_rating = models.FloatField(default=5)
     is_published = models.BooleanField(default=False)
     destination = models.ForeignKey(Destinations, on_delete=models.SET_NULL, null=True, blank=True)
     country = models.ForeignKey(Countries, on_delete=models.SET_NULL, null=True, blank=True)
@@ -220,6 +222,7 @@ class MapRouting(models.Model):
 class Gallery(R2PublicURLMixin, models.Model):
     itinerary = models.ForeignKey(Itinerary, related_name="gallery", on_delete=models.CASCADE)
     title = models.CharField(max_length=255, blank=True, null=True)
+    is_checked = models.BooleanField(default=False) 
     image = models.FileField(
         upload_to='itinerary/gallery',
         storage=R2PublicStorage(),

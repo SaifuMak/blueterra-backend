@@ -47,6 +47,7 @@ class ItineraryCreateAPIView(APIView):
                 location_title=request.data.get("location_title"),
                 description=request.data.get("description"),
                 color=request.data.get("color"),
+                general_rating=request.data.get("generalRating"),
                 destination=destination,
                 country=country,
                 collection=collection,
@@ -131,6 +132,7 @@ class ItineraryCreateAPIView(APIView):
                     itinerary=itinerary,
                     image=request.FILES.get(f"gallery[{index}][image]"),
                     title=request.data.get(f"gallery[{index}][title]"),
+                    is_checked = request.data.get(f"gallery[{index}][is_checked]") == "1"
                 )
                 index += 1
 
@@ -200,12 +202,15 @@ class ItineraryDetailView(APIView):
     def patch(self, request, pk):
         try:
             itinerary = get_object_or_404(Itinerary, pk=pk)
+       
 
             # Update simple fields
             itinerary.title = request.data.get("title", itinerary.title)
             itinerary.location_title = request.data.get("location_title", itinerary.location_title)
             itinerary.description = request.data.get("description", itinerary.description)
             itinerary.color = request.data.get("color", itinerary.color)
+            itinerary.general_rating = request.data.get("generalRating", itinerary.general_rating)
+
            
             # itinerary.destination = request.data.get("destination", itinerary.destination)
             # itinerary.country = request.data.get("country", itinerary.country)
@@ -395,6 +400,7 @@ class ItineraryDetailView(APIView):
                     "id": request.data.get(f"gallery[{i}][id]"),
                     "title": request.data.get(f"gallery[{i}][title]"),
                     "image": request.FILES.get(f"gallery[{i}][image]"),
+                    "is_checked" : request.data.get(f"gallery[{i}][is_checked]") == "1"
                 }
                 gallery_items.append(item)
                 i += 1
@@ -428,6 +434,8 @@ class ItineraryDetailView(APIView):
                     try:
                         gallery_item = Gallery.objects.get(id=item_id, itinerary=itinerary)
                         gallery_item.title = item_data["title"]
+                        gallery_item.is_checked = item_data["is_checked"]
+
                         if item_data.get("image"):
                             gallery_item.image = item_data["image"]
                         gallery_item.save()
@@ -450,9 +458,6 @@ def itinerary_list(request):
     countries = request.query_params.get('countries')
     collections = request.query_params.get('collections')
 
-    print(collections)
-
-        
     itineraries = Itinerary.objects.filter(is_published=True).order_by('-created_at')
 
     # Filter for categories
@@ -513,7 +518,9 @@ class CollectionsAdminAPIView(APIView):
         
         collection.title = data.get("title", collection.title)
         collection.description = data.get("description", collection.description)
+        collection.popular_journeys = data.get("popular_journeys", collection.popular_journeys)
 
+    
         if "banner_image" in request.FILES:
         #    include the collection.banner_image to trash
            collection.banner_image =  request.FILES["banner_image"]
