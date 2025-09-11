@@ -202,14 +202,22 @@ class ItineraryDetailView(APIView):
     def patch(self, request, pk):
         try:
             itinerary = get_object_or_404(Itinerary, pk=pk)
-       
 
+            is_published_str = request.data.getlist("is_published")
+
+            if is_published_str:
+                is_published_str = is_published_str[0]  # take first value
+
+            is_published = str(is_published_str).lower() in ["true", "1", "yes"]
+
+    
             # Update simple fields
             itinerary.title = request.data.get("title", itinerary.title)
             itinerary.location_title = request.data.get("location_title", itinerary.location_title)
             itinerary.description = request.data.get("description", itinerary.description)
             itinerary.color = request.data.get("color", itinerary.color)
             itinerary.general_rating = request.data.get("generalRating", itinerary.general_rating)
+            itinerary.is_published = is_published
 
            
             # itinerary.destination = request.data.get("destination", itinerary.destination)
@@ -501,7 +509,6 @@ def itinerary_detail(request, pk):
 
 @api_view(['GET'])
 def itinerary_meta_detail(request, pk):
-
         try:
             itinerary = get_object_or_404(Itinerary, pk=pk)
             serializer = UserItineraryMetaDetailsSerializer(itinerary)

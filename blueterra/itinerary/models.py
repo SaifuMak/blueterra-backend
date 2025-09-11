@@ -103,8 +103,6 @@ class Countries(models.Model):
     def __str__(self):
          return self.title
 
-
-
 class Categories(models.Model):
     collection = models.ForeignKey(Collections,on_delete=models.CASCADE, related_name="categories" )
     title = models.CharField(max_length=100)
@@ -112,14 +110,12 @@ class Categories(models.Model):
     def __str__(self):
          return self.title
     
-
-
 # Create your models here.
 class Itinerary(R2PublicURLMixin, models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True, blank=True)
     location_title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    color = models.CharField(max_length=20)
+    color = models.CharField(max_length=20, null=True, blank=True)
     general_rating = models.FloatField(default=5)
     is_published = models.BooleanField(default=False)
     destination = models.ForeignKey(Destinations, on_delete=models.SET_NULL, null=True, blank=True)
@@ -148,7 +144,7 @@ class Itinerary(R2PublicURLMixin, models.Model):
 
 class Day(R2PublicURLMixin, models.Model):
     itinerary = models.ForeignKey(Itinerary, related_name="days", on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     # image = models.ImageField(upload_to="days/", blank=True, null=True)
     image_title = models.CharField(max_length=255, blank=True, null=True)
@@ -171,7 +167,7 @@ class Day(R2PublicURLMixin, models.Model):
 
 class Hotel(R2PublicURLMixin, models.Model):
     itinerary = models.ForeignKey(Itinerary, related_name="hotels", on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     coordinates = models.CharField(max_length=255, blank=True, null=True)
     location = models.CharField(max_length=255, blank=True, null=True)
@@ -194,7 +190,7 @@ class Hotel(R2PublicURLMixin, models.Model):
 
 class DestinationHighlight(models.Model):
     itinerary = models.ForeignKey(Itinerary, related_name="destination_highlights", on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True, blank=True)
 
 
 class SignatureHighlight(models.Model):
@@ -204,12 +200,12 @@ class SignatureHighlight(models.Model):
 
 class PackageInclusion(models.Model):
     itinerary = models.ForeignKey(Itinerary, related_name="package_inclusions", on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True, blank=True)
 
 
 class PackageExclusion(models.Model):
     itinerary = models.ForeignKey(Itinerary, related_name="package_exclusions", on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, null=True, blank=True)
 
 
 class MapRouting(models.Model):
