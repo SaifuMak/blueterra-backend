@@ -4,7 +4,7 @@ from rest_framework import status
 from django.db import transaction
 from .models import *
 import json
-from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer,CategoriesListSerializer,CollectionsFilterListSerializer,DestinationsFilterListSerializer,CollectionsListUserSerializer,DestinationsListUserSerializer
+from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer,CategoriesListSerializer,CollectionsFilterListSerializer,DestinationsFilterListSerializer,CollectionsListUserSerializer,DestinationsListUserSerializer,UserItineraryMetaDetailsSerializer
 
 from  journals.paginations import GeneralPagination
 from django.shortcuts import get_object_or_404
@@ -494,6 +494,17 @@ def itinerary_detail(request, pk):
         try:
             itinerary = get_object_or_404(Itinerary, pk=pk)
             serializer = UserItineraryDetailsSerializer(itinerary)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(str(e))
+
+
+@api_view(['GET'])
+def itinerary_meta_detail(request, pk):
+
+        try:
+            itinerary = get_object_or_404(Itinerary, pk=pk)
+            serializer = UserItineraryMetaDetailsSerializer(itinerary)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             print(str(e))

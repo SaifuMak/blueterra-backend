@@ -215,6 +215,19 @@ class UserItineraryDetailsSerializer(serializers.ModelSerializer):
         ]
 
 
+
+
+class UserItineraryMetaDetailsSerializer(serializers.ModelSerializer):
+   
+    class Meta:
+        model = Itinerary
+        fields = [
+            "title",
+            "description",
+            "banner_image_public_url",
+        ]
+
+
 # class CategoriesFilterListSerializer(serializers.ModelSerializer):
 #     collection = CollectionsFilterListSerializer(read_only=True)
 #     class Meta:
