@@ -9,9 +9,6 @@ class BlogPostSerializer(serializers.ModelSerializer):
         model = BlogPost
         fields = '__all__'
 
-        
-
-
 
 class BlogCategorySerializer(serializers.ModelSerializer):
 

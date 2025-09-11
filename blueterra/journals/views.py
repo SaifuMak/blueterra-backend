@@ -164,7 +164,7 @@ def get_journal_categories(request):
 
 @api_view(['GET'])
 def get_five_journals(request):
-    blogs = BlogPost.objects.order_by('?')[:5]
+    blogs = BlogPost.objects.filter(is_published=True).order_by('?')[:5]
     serializer = BlogsUserSerializer(blogs, many=True)
     return Response(serializer.data, status= status.HTTP_200_OK)
 

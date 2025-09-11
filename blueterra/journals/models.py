@@ -30,12 +30,12 @@ from django.db import models
 
 
 class BlogPost(models.Model):
-    title = models.TextField()
-    slug = models.TextField(unique=True)
+    title = models.TextField(blank=True, null=True)
+    slug = models.TextField(unique=True,blank=True, null=True)
     meta_title = models.TextField(blank=True, null=True)
     meta_description = models.TextField(blank=True, null=True)
-    category_name = models.TextField()
-    blog_content = models.TextField()
+    category_name = models.TextField(blank=True, null=True)
+    blog_content = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_published = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
@@ -49,7 +49,8 @@ class BlogPost(models.Model):
     # )
     preview_image = models.FileField(
         upload_to='blogs/',
-        storage=R2PublicStorage()
+        storage=R2PublicStorage(),
+        blank=True, null=True
     )
     image_public_url = models.URLField(blank=True, null=True)
 
