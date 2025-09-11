@@ -321,29 +321,33 @@ class ItineraryDetailView(APIView):
             ids_to_delete = existing_ids - request_ids
             Day.objects.filter(id__in=ids_to_delete).delete()
 
+            # here we are handling the deletion of days that are not send  which means they are not needed, but we are not handles if the days in request is none ie user dont wnat any days 
+            # in that case, if the days are empty dlete all days related to itinerary
+
             # Update or create days
-            for day_data in days:
-                day_id = day_data.pop("id", None)
+            if days and len(days) > 0:
+                for day_data in days:
+                    day_id = day_data.pop("id", None)
 
-                # Treat 'undefined' or empty string as no id (new object)
-                if day_id in [None, "", "undefined"]:
-                    # Create new Day
-                    Day.objects.create(itinerary=itinerary, **day_data)
-                else:
-                    # Update existing Day
-                    try:
-                        day = Day.objects.get(id=day_id, itinerary=itinerary)
-                        day.title = day_data["title"]
-                        day.description = day_data["description"]
-                        day.order = day_data["order"]
-
-                        if day_data.get("image"):
-                            day.image = day_data["image"]
-                        day.image_title = day_data["image_title"]
-                        day.save()
-                    except Day.DoesNotExist:
-                        # fallback: create if ID not found
+                    # Treat 'undefined' or empty string as no id (new object)
+                    if day_id in [None, "", "undefined"]:
+                        # Create new Day
                         Day.objects.create(itinerary=itinerary, **day_data)
+                    else:
+                        # Update existing Day
+                        try:
+                            day = Day.objects.get(id=day_id, itinerary=itinerary)
+                            day.title = day_data["title"]
+                            day.description = day_data["description"]
+                            day.order = day_data["order"]
+
+                            if day_data.get("image"):
+                                day.image = day_data["image"]
+                            day.image_title = day_data["image_title"]
+                            day.save()
+                        except Day.DoesNotExist:
+                            # fallback: create if ID not found
+                            Day.objects.create(itinerary=itinerary, **day_data)
 
             hotels = []
             i = 0
@@ -377,28 +381,29 @@ class ItineraryDetailView(APIView):
             ids_to_delete = existing_ids - request_ids
             Hotel.objects.filter(id__in=ids_to_delete).delete()
             
+            if hotels and len(hotels) > 0:
                 # Update or create hotels
-            for hotel_data in hotels:
-                    hotel_id = hotel_data.pop("id", None)
+                for hotel_data in hotels:
+                        hotel_id = hotel_data.pop("id", None)
 
-                    # Treat 'undefined' or empty string as new object
-                    if hotel_id in [None, "", "undefined"]:
-                        Hotel.objects.create(itinerary=itinerary, **hotel_data)
-                    else:
-                        try:
-                            hotel = Hotel.objects.get(id=hotel_id, itinerary=itinerary)
-                            hotel.title = hotel_data["title"]
-                            hotel.description = hotel_data["description"]
-                            if hotel_data.get("image"):
-                                hotel.image = hotel_data["image"]
-                            hotel.coordinates = hotel_data["coordinates"]
-                            hotel.location = hotel_data["location"]
-                            hotel.map_link = hotel_data["map_link"]
-                            hotel.rating = hotel_data["rating"]
-                            day.order = day_data["order"]
-                            hotel.save()
-                        except Hotel.DoesNotExist:
+                        # Treat 'undefined' or empty string as new object
+                        if hotel_id in [None, "", "undefined"]:
                             Hotel.objects.create(itinerary=itinerary, **hotel_data)
+                        else:
+                            try:
+                                hotel = Hotel.objects.get(id=hotel_id, itinerary=itinerary)
+                                hotel.title = hotel_data["title"]
+                                hotel.description = hotel_data["description"]
+                                if hotel_data.get("image"):
+                                    hotel.image = hotel_data["image"]
+                                hotel.coordinates = hotel_data["coordinates"]
+                                hotel.location = hotel_data["location"]
+                                hotel.map_link = hotel_data["map_link"]
+                                hotel.rating = hotel_data["rating"]
+                                hotel.order = hotel_data["order"]
+                                hotel.save()
+                            except Hotel.DoesNotExist:
+                                Hotel.objects.create(itinerary=itinerary, **hotel_data)
                 
 
             gallery_items = []
@@ -431,24 +436,25 @@ class ItineraryDetailView(APIView):
             ids_to_delete = existing_ids - request_ids
             Gallery.objects.filter(id__in=ids_to_delete).delete()
 
+            if gallery_items and len(gallery_items) > 0:
             # Create or update gallery items
-            for item_data in gallery_items:
-                # If you have an id field, you can handle updates similarly
-                item_id = item_data.pop("id", None)
-                
-                if item_id in [None, "", "undefined"]:
-                    Gallery.objects.create(itinerary=itinerary, **item_data)
-                else:
-                    try:
-                        gallery_item = Gallery.objects.get(id=item_id, itinerary=itinerary)
-                        gallery_item.title = item_data["title"]
-                        gallery_item.is_checked = item_data["is_checked"]
-
-                        if item_data.get("image"):
-                            gallery_item.image = item_data["image"]
-                        gallery_item.save()
-                    except Gallery.DoesNotExist:
+                for item_data in gallery_items:
+                    # If you have an id field, you can handle updates similarly
+                    item_id = item_data.pop("id", None)
+                    
+                    if item_id in [None, "", "undefined"]:
                         Gallery.objects.create(itinerary=itinerary, **item_data)
+                    else:
+                        try:
+                            gallery_item = Gallery.objects.get(id=item_id, itinerary=itinerary)
+                            gallery_item.title = item_data["title"]
+                            gallery_item.is_checked = item_data["is_checked"]
+
+                            if item_data.get("image"):
+                                gallery_item.image = item_data["image"]
+                            gallery_item.save()
+                        except Gallery.DoesNotExist:
+                            Gallery.objects.create(itinerary=itinerary, **item_data)
 
             return Response({"message": "Itinerary updated successfully!"}, status=status.HTTP_201_CREATED)
 
