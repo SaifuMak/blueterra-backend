@@ -103,6 +103,7 @@ class ItineraryCreateAPIView(APIView):
                     itinerary=itinerary,
                     title=request.data.get(f"days[{index}][title]"),
                     description=request.data.get(f"days[{index}][description]"),
+                    coordinates=request.data.get(f"days[{index}][coordinates]"),
                     image=request.FILES.get(f"days[{index}][image]"),
                     image_title=request.data.get(f"days[{index}][image_title]"),
                     order = index
@@ -301,6 +302,7 @@ class ItineraryDetailView(APIView):
                     "id": request.data.get(f"days[{i}][id]"),  # optional, if editing existing
                     "title": request.data.get(f"days[{i}][title]"),
                     "description": request.data.get(f"days[{i}][description]"),
+                    "coordinates": request.data.get(f"days[{i}][coordinates]"),
                     "image": request.FILES.get(f"days[{i}][image]"),
                     "image_title": request.data.get(f"days[{i}][image_title]"),
                     "order" : i
@@ -339,6 +341,7 @@ class ItineraryDetailView(APIView):
                             day = Day.objects.get(id=day_id, itinerary=itinerary)
                             day.title = day_data["title"]
                             day.description = day_data["description"]
+                            day.coordinates = day_data["coordinates"]
                             day.order = day_data["order"]
 
                             if day_data.get("image"):

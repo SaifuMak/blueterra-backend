@@ -193,7 +193,7 @@ class CollectionsFilterListSerializer(serializers.ModelSerializer):
 
 
 class UserItineraryDetailsSerializer(serializers.ModelSerializer):
-    category =CategorySerializer(read_only=True)
+    category = CategorySerializer(read_only=True)
     days = UserDayDetailsSerializer(many=True, read_only=True)
     hotels = UserHotelDetailsSerializer(many=True, read_only=True)
     destination_highlights = UserDestinationHighlightDetailsSerializer(many=True, read_only=True)

@@ -146,6 +146,7 @@ class Day(R2PublicURLMixin, models.Model):
     itinerary = models.ForeignKey(Itinerary, related_name="days", on_delete=models.CASCADE)
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
+    coordinates = models.CharField(max_length=255, blank=True, null=True)
     # image = models.ImageField(upload_to="days/", blank=True, null=True)
     image_title = models.CharField(max_length=255, blank=True, null=True)
     order = models.PositiveIntegerField(default=0) 
@@ -162,7 +163,6 @@ class Day(R2PublicURLMixin, models.Model):
 
     class Meta:
         ordering = ["order"]  # always return in saved order
-
 
 
 class Hotel(R2PublicURLMixin, models.Model):
