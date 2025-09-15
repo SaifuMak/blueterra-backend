@@ -580,6 +580,7 @@ class DestinationsAdminAPIView(APIView):
         
         destination.title = data.get("title", destination.title)
         destination.description = data.get("description", destination.description)
+        destination.popular_journeys = data.get("popular_journeys", destination.popular_journeys)
 
         if "banner_image" in request.FILES:
         #    include the collection.banner_image to trash

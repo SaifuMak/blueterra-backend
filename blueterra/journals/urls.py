@@ -9,6 +9,7 @@ urlpatterns = [
    path('journals/', BlogPostAPIView.as_view(), name='create-blog'),
    path('journals/<int:pk>/', BlogPostDetailAPIView.as_view(), name='blog-detail'),
    path('journal-categories/', BlogCategoryAPIView.as_view(), name='categories'),
+   path('journal-categories/<int:pk>/', BlogCategoryAPIView.as_view(), name='categories'),
 
    path('get-journal-categories/', get_journal_categories, name='get_journal_categories'),
    path('get-journals/', get_journals, name='get_journals'),

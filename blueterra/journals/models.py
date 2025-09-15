@@ -28,6 +28,12 @@ from django.db import models
 # Create your models here.
 
 
+class BlogCategory(models.Model):
+    category = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True,blank=True, null=True)
+
+    def __str__(self):
+        return self.category
 
 class BlogPost(models.Model):
     title = models.TextField(blank=True, null=True)
@@ -35,6 +41,7 @@ class BlogPost(models.Model):
     meta_title = models.TextField(blank=True, null=True)
     meta_description = models.TextField(blank=True, null=True)
     category_name = models.TextField(blank=True, null=True)
+    category = models.ForeignKey(BlogCategory, on_delete=models.SET_NULL,null=True,blank=True )
     blog_content = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_published = models.BooleanField(default=False)
@@ -66,19 +73,9 @@ class BlogPost(models.Model):
                 self.image_public_url = new_url
                 super().save(update_fields=['image_public_url'])
 
-
-
     def __str__(self):
         return f'{self.title} {self.pk}' 
 
 
-
-class BlogCategory(models.Model):
-    category = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True,blank=True, null=True)
-
-
-    def __str__(self):
-        return self.category
 
 

@@ -168,7 +168,7 @@ class DestinationsListUserSerializer(serializers.ModelSerializer):
      
     class Meta:
         model = Collections
-        fields = ['title','description','banner_image_public_url','icon_public_url', 'countries']
+        fields = ['title','description','popular_journeys','banner_image_public_url','icon_public_url', 'countries']
 
 class DestinationsListSerializer(serializers.ModelSerializer):
 

@@ -72,12 +72,12 @@ class BlogPostAPIView(APIView):
 
         paginator = GeneralPagination()
         result_page = paginator.paginate_queryset(blogs, request)
-        serializer = BlogPostSerializer(result_page, many=True)
+        serializer = BlogGetSerializer(result_page, many=True)
 
         return paginator.get_paginated_response(serializer.data)
     
         return Response(serializer.data, status= status.HTTP_200_OK)
-     
+    
     def post(self, request):
         serializer = BlogPostSerializer(data=request.data)
         if serializer.is_valid():
@@ -152,6 +152,20 @@ class BlogCategoryAPIView(APIView):
             serializer.save()
             return Response({'message': 'Category created successfully!'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, pk):
+        category_instance = get_object_or_404(BlogCategory,pk=pk)
+        serializer = BlogCategorySerializer(category_instance, data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Category updated successfully!'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        category_instance = get_object_or_404(BlogCategory,pk=pk)
+        category_instance.delete()
+        return Response({'message': 'Category deleted successfully!'}, status=status.HTTP_201_CREATED)
+
 
 
 
@@ -178,7 +192,7 @@ def get_journals(request):
     blogs = BlogPost.objects.all().filter(is_published=True).order_by('-created_at')
 
     if category and category != 'View All':
-        blogs = blogs.filter(category_name = category)
+        blogs = blogs.filter(category__category = category)
     
     if query: 
         blogs = blogs.filter(
@@ -219,7 +233,7 @@ def blog_detail(request, slug):
 
     try:
         blog = get_object_or_404(BlogPost, slug=slug)
-        serializer = BlogPostSerializer(blog)
+        serializer = BlogGetSerializer(blog)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Exception as e:
         print(str(e))

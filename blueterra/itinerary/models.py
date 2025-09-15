@@ -54,6 +54,7 @@ class Collections(models.Model):
 class Destinations(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=1000)
+    popular_journeys = models.CharField(max_length=2000,null=True, blank=True)
     banner_image = models.FileField(
         upload_to='destinations/banners',
         storage=R2PublicStorage(),

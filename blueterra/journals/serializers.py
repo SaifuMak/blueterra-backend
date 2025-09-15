@@ -2,12 +2,31 @@
 from rest_framework import serializers
 from .models import *
 
+
+class BlogCategoryUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BlogCategory
+        fields = ['category']
+
+
+class BlogGetSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format='%d %B %Y', read_only=True)
+    category = BlogCategoryUserSerializer(read_only=True)
+
+    class Meta:
+        model = BlogPost
+        fields = '__all__'
+
+
 class BlogPostSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format='%d %B %Y', read_only=True)
 
     class Meta:
         model = BlogPost
         fields = '__all__'
+
+
 
 
 class BlogCategorySerializer(serializers.ModelSerializer):
