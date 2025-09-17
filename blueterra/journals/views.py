@@ -23,6 +23,7 @@ from blueterra.const import R2_PUBLIC_URL, S3_ENDPOINT
 class UploadBlogImageView(APIView):
 
     def post(self, request):
+        print(request)
         file_obj = request.FILES.get('file')
         if not file_obj:
             return JsonResponse({"error": "No file provided"}, status=400)
@@ -36,7 +37,7 @@ class UploadBlogImageView(APIView):
             's3',
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-             endpoint_url={S3_ENDPOINT}
+             endpoint_url=S3_ENDPOINT
         )
 
         s3.upload_fileobj(
