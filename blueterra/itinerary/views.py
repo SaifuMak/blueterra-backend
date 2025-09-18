@@ -6,7 +6,7 @@ from .models import *
 import json
 from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer,CategoriesListSerializer,CollectionsFilterListSerializer,DestinationsFilterListSerializer,CollectionsListUserSerializer,DestinationsListUserSerializer,UserItineraryMetaDetailsSerializer
 
-from  journals.paginations import GeneralPagination
+from  journals.paginations import GeneralPagination,ItineraryUsersPagination
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 
@@ -498,7 +498,7 @@ def itinerary_list(request):
         itineraries = itineraries.filter(collection__title__in=collections_list)
 
      
-    paginator = GeneralPagination()
+    paginator = ItineraryUsersPagination()
     result_page = paginator.paginate_queryset(itineraries, request)
 
     serializer = ItineraryUserListingSerializer(result_page, many=True)
