@@ -8,8 +8,8 @@ urlpatterns = [
    path("itineraries/", ItineraryListAPIView.as_view(), name="itinerary-list"),
    path('itinerary/<int:pk>/', ItineraryDetailView.as_view(), name='itinerary_details'),
    path('itinerary-list/', itinerary_list, name='itinerary-list'),
-   path('itinerary-details/<int:pk>/', itinerary_detail, name='itinerary_details_for_user'),
-   path('itinerary-meta-details/<int:pk>/', itinerary_meta_detail, name='itinerary_meta_detail_for_user'),
+   path('itinerary-details/<slug:slug>/', itinerary_detail, name='itinerary_details_for_user'),
+   path('itinerary-meta-details/<slug:slug>/', itinerary_meta_detail, name='itinerary_meta_detail_for_user'),
 
 
    path("collections/", CollectionsAdminAPIView.as_view(), name="collection-list"),

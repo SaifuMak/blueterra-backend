@@ -114,6 +114,7 @@ class Categories(models.Model):
 # Create your models here.
 class Itinerary(R2PublicURLMixin, models.Model):
     title = models.CharField(max_length=255, null=True, blank=True)
+    slug = models.TextField(unique=True,blank=True, null=True)
     location_title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     color = models.CharField(max_length=20, null=True, blank=True)

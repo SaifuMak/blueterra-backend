@@ -16,6 +16,13 @@ class ItineraryCreateAPIView(APIView):
     @transaction.atomic
     def post(self, request):
         try:
+
+            slug=request.data.get("slug",None)
+            if slug:
+                is_slug_already_taken = Itinerary.objects.filter(slug=slug).exists()
+                if is_slug_already_taken:
+                    return Response({"error": "Slug is already taken."}, status=status.HTTP_400_BAD_REQUEST)
+
             is_published_str = request.data.getlist("is_published")
 
             if is_published_str:
@@ -44,6 +51,7 @@ class ItineraryCreateAPIView(APIView):
             # Main Itinerary
             itinerary = Itinerary.objects.create(
                 title=request.data.get("title"),
+                slug=request.data.get("slug"),
                 location_title=request.data.get("location_title"),
                 description=request.data.get("description"),
                 color=request.data.get("color"),
@@ -204,6 +212,12 @@ class ItineraryDetailView(APIView):
         try:
             itinerary = get_object_or_404(Itinerary, pk=pk)
 
+            slug=request.data.get("slug",None)
+            if slug:
+                is_slug_already_taken = Itinerary.objects.filter(slug=slug).exclude(pk=itinerary.pk).exists()
+                if is_slug_already_taken:
+                    return Response({"error": "Slug is already taken."}, status=status.HTTP_400_BAD_REQUEST)
+
             is_published_str = request.data.getlist("is_published")
 
             if is_published_str:
@@ -214,6 +228,7 @@ class ItineraryDetailView(APIView):
     
             # Update simple fields
             itinerary.title = request.data.get("title", itinerary.title)
+            itinerary.slug = request.data.get("slug", itinerary.slug)
             itinerary.location_title = request.data.get("location_title", itinerary.location_title)
             itinerary.description = request.data.get("description", itinerary.description)
             itinerary.color = request.data.get("color", itinerary.color)
@@ -506,10 +521,10 @@ def itinerary_list(request):
 
 
 @api_view(['GET'])
-def itinerary_detail(request, pk):
+def itinerary_detail(request, slug):
 
         try:
-            itinerary = get_object_or_404(Itinerary, pk=pk)
+            itinerary = get_object_or_404(Itinerary, slug=slug)
             serializer = UserItineraryDetailsSerializer(itinerary)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
@@ -517,9 +532,9 @@ def itinerary_detail(request, pk):
 
 
 @api_view(['GET'])
-def itinerary_meta_detail(request, pk):
+def itinerary_meta_detail(request, slug):
         try:
-            itinerary = get_object_or_404(Itinerary, pk=pk)
+            itinerary = get_object_or_404(Itinerary, slug=slug)
             serializer = UserItineraryMetaDetailsSerializer(itinerary)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
