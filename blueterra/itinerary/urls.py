@@ -27,11 +27,16 @@ urlpatterns = [
    path("categories/", CategoriesAdminAPIView.as_view(), name="categories"),
    path("category/<int:pk>/", CategoriesAdminAPIView.as_view(), name="category"),
 
-
    path("filters-list/", filters_list, name="filters_list"),
 
    path("get-collections/", collections, name="collections"),
    path("get-destinations/", destinations, name="destinations"),
+
+   path("cruise-deals/", CruiseDealsApi.as_view(), name="cruise_deals"),
+   path("cruise-deal/<int:pk>/", CruiseDealsApi.as_view(), name="cruise_deal"),
+   path("cruise-deal-details/<int:pk>/", cruise_deals_details, name="cruise_deals_details"),
+   path("cruise-deal-toggle-publish-status/<int:pk>/", cruise_deal_toggle_publish_status, name="cruise_deal_toggle_publish_status"),
+
 
 
 ]

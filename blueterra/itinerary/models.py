@@ -238,3 +238,21 @@ class FeaturedPoint(models.Model):
     suggested_date = models.CharField(max_length=255, blank=True, null=True)
     price = models.CharField(max_length=255, blank=True, null=True)
     additional_information = models.CharField(max_length=255, blank=True, null=True)
+
+
+class CruiseDeals(R2PublicURLMixin, models.Model):
+    title = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(blank=True, null=True)
+    image = models.FileField(
+        upload_to='cruise/deals',
+        storage=R2PublicStorage(),
+        blank=True, null=True
+    )
+    image_public_url = models.URLField(blank=True, null=True)
+    is_published = models.BooleanField(default=True)
+
+    file_field_name = "image"
+    url_field_name = "image_public_url"
+    path_prefix="cruise/deals"
+
+    

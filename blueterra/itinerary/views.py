@@ -4,7 +4,7 @@ from rest_framework import status
 from django.db import transaction
 from .models import *
 import json
-from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer,CategoriesListSerializer,CollectionsFilterListSerializer,DestinationsFilterListSerializer,CollectionsListUserSerializer,DestinationsListUserSerializer,UserItineraryMetaDetailsSerializer
+from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer,CategoriesListSerializer,CollectionsFilterListSerializer,DestinationsFilterListSerializer,CollectionsListUserSerializer,DestinationsListUserSerializer,UserItineraryMetaDetailsSerializer,CruiseDealsListSerializer
 
 from  journals.paginations import GeneralPagination,ItineraryUsersPagination
 from django.shortcuts import get_object_or_404
@@ -750,3 +750,70 @@ def filters_list(request):
                      'countries' : countries_serialized_data.data,
                      'categories' : categories_serialized_data.data, }
                     , status=status.HTTP_200_OK)
+
+
+
+
+class CruiseDealsApi(APIView):
+    def get(self, request):
+       
+        cruise_deals = CruiseDeals.objects.all()
+
+        paginator = GeneralPagination()
+        result_page = paginator.paginate_queryset(cruise_deals, request)
+
+        serializer = CruiseDealsListSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+    
+    def post(self, request):
+        serializer = CruiseDealsListSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Deal created successfully!', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self,request,pk):
+
+        cruise_deal = get_object_or_404(CruiseDeals,pk=pk)
+        data = request.data
+
+        cruise_deal.title = data.get("title", cruise_deal.title )
+        cruise_deal.description = data.get("description", cruise_deal.description)
+        image = data.get("image", None)
+
+        if image:
+            cruise_deal.image = image
+
+        cruise_deal.save()
+
+        return Response({'message' :' Successfully Updated Country'}, status=status.HTTP_200_OK)
+
+
+
+@api_view(['GET'])
+def cruise_deals_details(request, pk):
+
+        try:
+            deal = get_object_or_404(CruiseDeals, pk=pk)
+            serializer = CruiseDealsListSerializer(deal)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(str(e))
+
+
+
+@api_view(['PATCH'])
+def cruise_deal_toggle_publish_status(request, pk):
+
+        try:
+            deal = get_object_or_404(CruiseDeals, pk=pk)
+            deal.is_published = not deal.is_published
+            deal.save()
+            return Response(
+                            {
+                                "message": "successfully published" if deal.is_published else "successfully unpublished"
+                            },
+                            status=status.HTTP_200_OK
+                        )
+        except Exception as e:
+            print(str(e))

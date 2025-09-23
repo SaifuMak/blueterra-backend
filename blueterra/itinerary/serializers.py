@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (
     Itinerary, Day, Hotel, DestinationHighlight, SignatureHighlight,
-    PackageInclusion, PackageExclusion, MapRouting, Gallery, FeaturedPoint, Collections, Destinations, Countries, Categories
+    PackageInclusion, PackageExclusion, MapRouting, Gallery, FeaturedPoint, Collections, Destinations, Countries, Categories, CruiseDeals
 )
 
 class DaySerializer(serializers.ModelSerializer):
@@ -301,3 +301,10 @@ class ItineraryUserListingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Itinerary
         fields = ['id','title','slug','location_title','description','general_rating','featured_points','collection','category','is_published','days','gallery']
+
+
+class CruiseDealsListSerializer(serializers.ModelSerializer):
+   
+    class Meta:
+        model = CruiseDeals
+        fields = '__all__'
