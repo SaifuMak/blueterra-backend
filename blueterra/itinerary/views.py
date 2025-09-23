@@ -4,7 +4,7 @@ from rest_framework import status
 from django.db import transaction
 from .models import *
 import json
-from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer,CategoriesListSerializer,CollectionsFilterListSerializer,DestinationsFilterListSerializer,CollectionsListUserSerializer,DestinationsListUserSerializer,UserItineraryMetaDetailsSerializer,CruiseDealsListSerializer
+from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer,CategoriesListSerializer,CollectionsFilterListSerializer,DestinationsFilterListSerializer,CollectionsListUserSerializer,DestinationsListUserSerializer,UserItineraryMetaDetailsSerializer,CruiseDealsListSerializer,CruiseDealsUsersSerializer
 
 from  journals.paginations import GeneralPagination,ItineraryUsersPagination
 from django.shortcuts import get_object_or_404
@@ -757,7 +757,7 @@ def filters_list(request):
 class CruiseDealsApi(APIView):
     def get(self, request):
        
-        cruise_deals = CruiseDeals.objects.all()
+        cruise_deals = CruiseDeals.objects.all().order_by('-id')
 
         paginator = GeneralPagination()
         result_page = paginator.paginate_queryset(cruise_deals, request)
@@ -787,6 +787,14 @@ class CruiseDealsApi(APIView):
         cruise_deal.save()
 
         return Response({'message' :' Successfully Updated Country'}, status=status.HTTP_200_OK)
+    
+      
+    def delete(self,request,pk):
+
+        cruise_deal = get_object_or_404(CruiseDeals,pk=pk)
+        cruise_deal.delete()
+        return Response({'message' :'Deal deleted from records.'}, status=status.HTTP_200_OK)
+
 
 
 
@@ -817,3 +825,13 @@ def cruise_deal_toggle_publish_status(request, pk):
                         )
         except Exception as e:
             print(str(e))
+
+
+
+
+@api_view(['GET'])
+def get_cruise_deals(request):
+        
+        cruise_deals = CruiseDeals.objects.filter(is_published= True)
+        serializer = CruiseDealsUsersSerializer(cruise_deals, many=True)
+        return Response(serializer.data)    

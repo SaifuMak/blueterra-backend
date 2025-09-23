@@ -37,6 +37,9 @@ urlpatterns = [
    path("cruise-deal-details/<int:pk>/", cruise_deals_details, name="cruise_deals_details"),
    path("cruise-deal-toggle-publish-status/<int:pk>/", cruise_deal_toggle_publish_status, name="cruise_deal_toggle_publish_status"),
 
+   path("get-cruise-deals/", get_cruise_deals, name="get_cruise_deals"),
+
+
 
 
 ]

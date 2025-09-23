@@ -308,3 +308,12 @@ class CruiseDealsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CruiseDeals
         fields = '__all__'
+        read_only_fields = ['is_published']
+
+
+
+class CruiseDealsUsersSerializer(serializers.ModelSerializer):
+   
+    class Meta:
+        model = CruiseDeals
+        fields = ['title','description','image_public_url']
