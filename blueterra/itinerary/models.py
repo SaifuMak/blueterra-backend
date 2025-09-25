@@ -2,6 +2,7 @@ from django.db import models
 from blueterra.storages_backends import R2PublicStorage
 from .mixins import R2PublicURLMixin
 from blueterra.const import R2_PUBLIC_URL
+from blueterra.utils import mark_file_for_deletion
 
 
 class Collections(models.Model):
@@ -138,10 +139,33 @@ class Itinerary(R2PublicURLMixin, models.Model):
     url_field_name = "banner_image_public_url"
     path_prefix="itinerary/banner"
 
+    # def delete(self, *args, **kwargs):
+    #     if self.banner_image:
+    #         self.banner_image.delete(save=False)  # removes from R2
+    #     super().delete(*args, **kwargs)  # removes model instance from DB
+
     def delete(self, *args, **kwargs):
+        # mark itinerary banner
         if self.banner_image:
-            self.banner_image.delete(save=False)  # removes from R2
-        super().delete(*args, **kwargs)  # removes model instance from DB
+            mark_file_for_deletion(self.banner_image)
+
+        # mark related Days images
+        for day in self.days.all():
+            if day.image:
+                mark_file_for_deletion(day.image)
+
+        # mark related Hotels images
+        for hotel in self.hotels.all():
+            if hotel.image:
+                mark_file_for_deletion(hotel.image)
+
+        # mark related Gallery images
+        for gallery in self.gallery.all():
+            if gallery.image:
+                mark_file_for_deletion(gallery.image)
+
+        # now delete the DB record and cascade relations
+        super().delete(*args, **kwargs)
 
 
 class Day(R2PublicURLMixin, models.Model):

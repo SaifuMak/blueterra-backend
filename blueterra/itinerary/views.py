@@ -9,6 +9,7 @@ from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, I
 from  journals.paginations import GeneralPagination,ItineraryUsersPagination
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
+from  blueterra.utils import mark_file_for_deletion
 
 
 class ItineraryCreateAPIView(APIView):
@@ -185,7 +186,6 @@ class ItineraryListAPIView(APIView):
                 itinerary.is_published =  False
             itinerary.save()
             return Response({"message": "Publish status updated successfully."}, status=status.HTTP_200_OK)
-        
 
 
 
@@ -204,7 +204,7 @@ class ItineraryDetailView(APIView):
     def delete(self, request, pk):
         itinerary = get_object_or_404(Itinerary, pk=pk)
         itinerary.delete()
-        return Response({"message": "Journal deleted successfully"}, status=status.HTTP_200_OK)
+        return Response({"message": "Itinerary deleted successfully"}, status=status.HTTP_200_OK)
 
     
     @transaction.atomic
@@ -259,6 +259,7 @@ class ItineraryDetailView(APIView):
 
             # Banner image: replace only if new file uploaded
             if "banner_image" in request.FILES:
+                mark_file_for_deletion(itinerary.banner_image)
                 itinerary.banner_image = request.FILES["banner_image"]
 
             itinerary.save()
@@ -336,9 +337,14 @@ class ItineraryDetailView(APIView):
             )
             # Delete days that are not in the request
             ids_to_delete = existing_ids - request_ids
+
+            # move to trash
+            for item in Day.objects.filter(id__in=ids_to_delete):
+                mark_file_for_deletion(item.image)
+
             Day.objects.filter(id__in=ids_to_delete).delete()
 
-            # here we are handling the deletion of days that are not send  which means they are not needed, but we are not handles if the days in request is none ie user dont wnat any days 
+            # here we are handling the deletion of days that are not send  which means they are not needed, but we doesnt handles if the days in request is none ie user dont wnat any days 
             # in that case, if the days are empty dlete all days related to itinerary
 
             # Update or create days
@@ -360,6 +366,7 @@ class ItineraryDetailView(APIView):
                             day.order = day_data["order"]
 
                             if day_data.get("image"):
+                                mark_file_for_deletion(day.image)
                                 day.image = day_data["image"]
                             day.image_title = day_data["image_title"]
                             day.save()
@@ -397,6 +404,11 @@ class ItineraryDetailView(APIView):
 
             # Delete hotels that are not in the request
             ids_to_delete = existing_ids - request_ids
+
+            # move to trash
+            for item in Hotel.objects.filter(id__in=ids_to_delete):
+                mark_file_for_deletion(item.image)
+
             Hotel.objects.filter(id__in=ids_to_delete).delete()
             
             if hotels and len(hotels) > 0:
@@ -413,6 +425,7 @@ class ItineraryDetailView(APIView):
                                 hotel.title = hotel_data["title"]
                                 hotel.description = hotel_data["description"]
                                 if hotel_data.get("image"):
+                                    mark_file_for_deletion(hotel.image)
                                     hotel.image = hotel_data["image"]
                                 hotel.coordinates = hotel_data["coordinates"]
                                 hotel.location = hotel_data["location"]
@@ -452,6 +465,10 @@ class ItineraryDetailView(APIView):
 
             # Delete galleries that are not in the request
             ids_to_delete = existing_ids - request_ids
+             # move to trash
+            for item in Gallery.objects.filter(id__in=ids_to_delete):
+                mark_file_for_deletion(item.image)
+
             Gallery.objects.filter(id__in=ids_to_delete).delete()
 
             if gallery_items and len(gallery_items) > 0:
@@ -469,6 +486,7 @@ class ItineraryDetailView(APIView):
                             gallery_item.is_checked = item_data["is_checked"]
 
                             if item_data.get("image"):
+                                mark_file_for_deletion(gallery_item.image)
                                 gallery_item.image = item_data["image"]
                             gallery_item.save()
                         except Gallery.DoesNotExist:
@@ -565,6 +583,7 @@ class CollectionsAdminAPIView(APIView):
     
         if "banner_image" in request.FILES:
         #    include the collection.banner_image to trash
+           mark_file_for_deletion(collection.banner_image)
            collection.banner_image =  request.FILES["banner_image"]
 
         if "icon" in request.FILES:
@@ -599,10 +618,14 @@ class DestinationsAdminAPIView(APIView):
 
         if "banner_image" in request.FILES:
         #    include the collection.banner_image to trash
+           old_image = destination.banner_image 
+           mark_file_for_deletion(old_image)
            destination.banner_image =  request.FILES["banner_image"]
 
         if "icon" in request.FILES:
             #    include the collection.banner_image to trash
+           old_image = destination.icon 
+           mark_file_for_deletion(old_image)
            destination.icon =  request.FILES["icon"]
 
         destination.save()
@@ -772,6 +795,7 @@ class CruiseDealsApi(APIView):
             return Response({'message': 'Deal created successfully!', 'data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    @transaction.atomic
     def patch(self,request,pk):
 
         cruise_deal = get_object_or_404(CruiseDeals,pk=pk)
@@ -782,20 +806,22 @@ class CruiseDealsApi(APIView):
         image = data.get("image", None)
 
         if image:
+            old_image = cruise_deal.image
+            mark_file_for_deletion(old_image)
             cruise_deal.image = image
 
         cruise_deal.save()
 
         return Response({'message' :' Successfully Updated Country'}, status=status.HTTP_200_OK)
     
-      
+    
     def delete(self,request,pk):
 
         cruise_deal = get_object_or_404(CruiseDeals,pk=pk)
+        old_image = cruise_deal.image
+        mark_file_for_deletion(old_image)
         cruise_deal.delete()
         return Response({'message' :'Deal deleted from records.'}, status=status.HTTP_200_OK)
-
-
 
 
 @api_view(['GET'])

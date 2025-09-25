@@ -3,6 +3,7 @@ from django.db import models
 from blueterra.const import R2_PUBLIC_URL
 
 from blueterra.storages_backends import R2PublicStorage
+from blueterra.utils import mark_file_for_deletion
 # Create your models here.
 
 # class Product(models.Model):
@@ -72,6 +73,11 @@ class BlogPost(models.Model):
             if self.image_public_url != new_url:
                 self.image_public_url = new_url
                 super().save(update_fields=['image_public_url'])
+    
+    def delete(self, *args, **kwargs):
+        if self.preview_image:
+            mark_file_for_deletion(self.preview_image)
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f'{self.title} {self.pk}' 

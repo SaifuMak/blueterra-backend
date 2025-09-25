@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'journals',
     'itinerary',
     'authentication',
+    'trash',
     'storages',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
@@ -95,7 +96,7 @@ AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 # AWS_S3_ENDPOINT_URL = 'https://f30c97b5e92eb15944ca7c0536b63e54.r2.cloudflarestorage.com'
 AWS_S3_REGION_NAME = ''
-# AWS_S3_FILE_OVERWRITE = False
+AWS_S3_FILE_OVERWRITE = False
 # AWS_DEFAULT_ACL = None
 
 AWS_DEFAULT_ACL = 'public-read'
