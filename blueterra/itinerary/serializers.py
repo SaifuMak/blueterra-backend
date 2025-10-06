@@ -135,19 +135,22 @@ class ItinerarySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-
-
-
-
 class CollectionsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Collections
         fields = '__all__'
 
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
+        fields = ["title"]
+
+
+class CollectionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Collections
         fields = ["title"]
 
 
@@ -194,7 +197,7 @@ class CollectionsFilterListSerializer(serializers.ModelSerializer):
 
 class UserItineraryDetailsSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
-    collection = CollectionsListSerializer(read_only=True)
+    collection = CollectionsSerializer(read_only=True)
     days = UserDayDetailsSerializer(many=True, read_only=True)
     hotels = UserHotelDetailsSerializer(many=True, read_only=True)
     destination_highlights = UserDestinationHighlightDetailsSerializer(many=True, read_only=True)
