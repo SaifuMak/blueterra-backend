@@ -283,10 +283,11 @@ class ItineraryDetailsSerializer(serializers.ModelSerializer):
 class ItineraryListSerializer(serializers.ModelSerializer):
     days = DaySerializer(many=True, read_only=True)
     collection = CollectionsFilterListSerializer(read_only=True)
+    country = CountriesSerializer(read_only=True) 
 
     class Meta:
         model = Itinerary
-        fields = ['id','title','collection','is_published','days']
+        fields = ['id','title','collection','country','is_published','days']
 
 
 

@@ -11,3 +11,6 @@ class ItineraryUsersPagination(PageNumberPagination):
 class JournalPagination(PageNumberPagination):
     page_size = 6
 
+
+class ItineraryListPagination(PageNumberPagination):
+    page_size = 10

@@ -6,7 +6,7 @@ from .models import *
 import json
 from  .serializers import ItineraryListSerializer, ItineraryDetailsSerializer, ItineraryUserListingSerializer,UserItineraryDetailsSerializer,CollectionsListSerializer,DestinationsListSerializer,CountriesListSerializer,CategoriesListSerializer,CollectionsFilterListSerializer,DestinationsFilterListSerializer,CollectionsListUserSerializer,DestinationsListUserSerializer,UserItineraryMetaDetailsSerializer,CruiseDealsListSerializer,CruiseDealsUsersSerializer
 
-from  journals.paginations import GeneralPagination,ItineraryUsersPagination
+from  journals.paginations import GeneralPagination,ItineraryUsersPagination, ItineraryListPagination
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from  blueterra.utils import mark_file_for_deletion
@@ -156,15 +156,20 @@ class ItineraryCreateAPIView(APIView):
 class ItineraryListAPIView(APIView):
     def get(self, request):
         status_param = request.query_params.get('status')
+
+        query = request.query_params.get('query')
         
         itineraries = Itinerary.objects.all().order_by('-created_at')
 
+        if query:
+            itineraries = Itinerary.objects.filter(country__title__icontains=query)
+
         if status_param == 'Published':
             itineraries = itineraries.filter(is_published=True)
-        else:
+        elif status_param == 'Drafted':
             itineraries = itineraries.filter(is_published=False)
 
-        paginator = GeneralPagination()
+        paginator = ItineraryListPagination()
         result_page = paginator.paginate_queryset(itineraries, request)
 
         serializer = ItineraryListSerializer(result_page, many=True)
